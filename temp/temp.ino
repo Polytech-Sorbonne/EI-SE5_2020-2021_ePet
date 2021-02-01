@@ -1,31 +1,37 @@
+#include "Adafruit_SHTC3.h"
 #include <Wire.h>
+#include <Adafruit_Sensor.h>
 
-int LED = 2;
-int x = 0;
+Adafruit_SHTC3 shtc3 = Adafruit_SHTC3();
+#define I2C_SDA 21
+#define I2C_SCL 22
+
+TwoWire I2CBME = TwoWire(0);
+
 void setup() {
-  // Define the LED pin as Output
-  pinMode (LED, OUTPUT);
-  // Start the I2C Bus as Slave on address 9
-  Wire.begin(9); 
-  // Attach a function to trigger when something is received.
-  Wire.onReceive(receiveEvent);
-}
-void receiveEvent(int bytes) {
-  x = Wire.read();    // read one character from the I2C
-}
-void loop() {
-  //If value received is 0 blink LED for 200 ms
-  Serial.print(x);
-  if (x == '0') {
-    digitalWrite(LED, HIGH);
-    delay(200);
-    digitalWrite(LED, LOW);
-    delay(200);
+  Serial.begin(115200);
+  //I2CBME.begin(I2C_SDA, I2C_SCL, 100000);
+
+  while (!Serial)
+    delay(10);     // will pause Zero, Leonardo, etc until serial console opens
+
+  Serial.println("SHTC3 test");
+  if (! shtc3.begin()) {
+    Serial.println("Couldn't find SHTC3");
+    while (1) delay(1);
   }
-  //If value received is 3 blink LED for 400 ms
-  /*if (x == '3') {
-    digitalWrite(LED, HIGH);
-    delay(400);
-    digitalWrite(LED, LOW);
-    delay(400);}*/
+  Serial.println("Found SHTC3 sensor");
+
+}
+
+
+void loop() {
+  sensors_event_t humidity, temp;
+  
+  shtc3.getEvent(&humidity, &temp);// populate temp and humidity objects with fresh data
+  
+  Serial.print("Temperature: "); Serial.print(temp.temperature); Serial.println(" degrees C");
+  Serial.print("Humidity: "); Serial.print(humidity.relative_humidity); Serial.println("% rH");
+
+  delay(1000);
 }
