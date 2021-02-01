@@ -24,9 +24,14 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			return
 
 		res = urllib.parse.urlparse(self.path)
-		rep = self.mysql.select(res.path)
+		rep = ""
+		#rep = self.mysql.select(res.path)
 
-		if len(rep) > 0:
+		"""if self.path == "/User":
+			rep = self.mysql.select_user(res.path)
+		"""
+
+		"""if len(rep) > 0:
 			self.mysql.send_data()
 
 			self.send_response(200)
@@ -37,6 +42,15 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			self.send_response(404)
 			self.send_header("Content-type", "text/html")
 			self.end_headers()
+		"""
+
+		if self.path == "/Accueil":
+			self.send_response(200)
+			self.send_header("Content-type", "text/html")
+			self.end_headers()
+			with open('accueil.html', 'r') as f:
+				html = f.read()
+				self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
 
 	def do_POST(self):
 		"""Respond to a POST request."""
@@ -64,12 +78,20 @@ class MySQL():
 		elem = path.split('/')
 		print("LEN= ", len(elem))
 		print("ELEM =", elem)
+
 		if len(elem) == 2:
 			req = "select * from %s" %(elem[1])
 			print(req)
 		else:
 			req = "select %s from %s where id=%s" %(elem[3],elem[1],elem[2])
 		return self.c.execute(req).fetchall()
+
+	def select_user(self,path):
+		req = "select * from User"
+		print(req)
+		return self.c.execute(req).fetchall()
+
+
 
 	def insert(self,path,query):
 		print(query)
