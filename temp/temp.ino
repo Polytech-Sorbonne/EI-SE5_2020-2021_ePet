@@ -7,7 +7,7 @@ Adafruit_SHTC3 shtc3 = Adafruit_SHTC3();
 #define I2C_SCL 22
 
 TwoWire I2CBME = TwoWire(0);
-//hello
+
 
 void setup() {
   Serial.begin(115200);
