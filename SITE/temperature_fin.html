@@ -1,6 +1,11 @@
 
+        var options = {
+          title: 'Titre',
+          hAxis: {title: 'Date heure',  titleTextStyle: {color: '#333'}},
+          vAxis: {minValue: 0}
+        };
 
-        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+        var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
 
         chart.draw(data, options);
       }
@@ -30,14 +35,8 @@
   <br>
   <br>
     <div class="row">
-      <p>Filtrer par période</p>
-      <form action="Température">
-        Date de début: <input type="date" name="deb"><br>
-        Date de fin: <input type="date" name="fin"><br>
-        <input type="submit">
-      </form>
       <div class="column">
-      <div id="piechart" style="width: device-width; height: 500px;"></div>
+      <div id="chart_div" style="width: device-width; height: 500px;"></div>
       </div>
     </div>
   </div>

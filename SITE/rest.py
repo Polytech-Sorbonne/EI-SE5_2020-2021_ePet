@@ -62,15 +62,19 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 
 			s = self.mysql.temperature_html()
 
+			print("S")
+			print(s)
+
+			print("S 0 1")
+			print(s[0][1])
+
 			for i in range(len(s)):
 
 				my_str = my_str + "          ['"
-				my_str = my_str + str(s[i][1]) + "', " + str(s[i][0])
+				my_str = my_str + str(s[i][0]) + "', " + str(s[i][1])
 				my_str = my_str + "],\n"
 
-				my_str = my_str + "       ])"
-
-				my_str = my_str + "]);\nvar options = {\ntitle: \'" + " Titre " + "\'\n};"
+			my_str = my_str + "]);\n"
 
 
 			with open('temperature_fin.html', 'r') as f:
