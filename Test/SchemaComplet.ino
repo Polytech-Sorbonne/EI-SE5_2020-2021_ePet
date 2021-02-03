@@ -118,7 +118,7 @@ void detection_wifi(byte data_Sigfox[12]){
       Serial.print(" (");
       Serial.print(WiFi.RSSI(i));
       rssi = WiFi.RSSI(i);
-      Serial.print(")");
+      Serial.println(")");
       Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN)?" ":"*");
       
       //construction du message Sigfox
@@ -176,62 +176,68 @@ void accelerometre(Adafruit_MMA8451 mma, byte data_Sigfox[12]){
   
   // data_Sigfox[8] = event.acceleration.x
   convFloatToHex(event.acceleration.x, data_Sigfox[8]);
+  Serial.print("data Sigfox 8 : ");
+  Serial.println(data_Sigfox[8]);
+  
   // data_Sigfox[9] = event.acceleration.y
   convFloatToHex(event.acceleration.y, data_Sigfox[9]);
-  // data_Sigfox[10] = event.acceleration.z
-  //convFloatToHex(event.acceleration.z, data_Sigfox[10]);
+  Serial.print("data Sigfox 9 : ");
+  Serial.println(data_Sigfox[9]);
 }
 
 // A tester
-void convFloatToHexTemp(float x, byte res){
+void convFloatToHexTemp(float x, int res){
   int integer = x * 100;
   Serial.print("Integer : ");
   Serial.println(integer);
-  res = integer & 0xFFFF;
-  Serial.print("Hexa : ");
-  Serial.println(res);
 }
+
 // Tester avec sigfox
-void temperature(byte res){
+void temperature(int res){
   sensors_event_t humidity, temp;
   
   shtc3.getEvent(&humidity, &temp);// populate temp and humidity objects with fresh data
   
   Serial.print("Temperature: "); Serial.print(temp.temperature); Serial.println(" degrees C");
-  Serial.print("Humidity: "); Serial.print(humidity.relative_humidity); Serial.println("% rH");
-  int tmp = temp.temperature;
+  //Serial.print("Humidity: "); Serial.print(humidity.relative_humidity); Serial.println("% rH");
+  float tmp = temp.temperature;
+  convFloatToHexTemp(tmp, res);
   delay(1000);
 }
 
+
+void send_message(byte data_Sigfox[12] , byte temp){
+  
+  sprintf(data_string, "AT$SF=%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%04x\r\n",data_Sigfox[0],data_Sigfox[1],data_Sigfox[2],data_Sigfox[3],data_Sigfox[4],data_Sigfox[5],data_Sigfox[6],data_Sigfox[7],data_Sigfox[8],data_Sigfox[9],temp); ; // A compléter
+  Serial2.print(data_string);
+  Serial.println(sizeof(data_string));
+  Serial.println("Envoi");
+  Serial.println(data_string);
+             
+  while (!Serial2.available()){
+    Serial.println("Waiting for response");
+    delay(1000);
+  }
+  while (Serial2.available()){
+    output = (char)Serial2.read();
+    status += output;
+    delay(10);
+  }
+  Serial.println();
+  Serial.print("Status \t");
+  Serial.println(status);
+  delay(1000);
+    
+  Serial.println("");
+  // Wait a bit before scanning again
+  delay(5000);  
+}
+
 void loop()
-{
+{ 
+    int temp;
     detection_wifi(data_Sigfox);
     accelerometre(mma, data_Sigfox);
-    
-    //Peut-être coder la fonction send_message pour envoyer des données
-    sprintf(data_string, "AT$SF=%02x%02x\r\n",data_Sigfox[0],data_Sigfox[1]) ; // A compléter
-    
-    Serial2.print(data_string);
-    Serial.println(sizeof(data_string));
-    Serial.println("Envoi");
-    Serial.println(data_string);
-             
-    while (!Serial2.available()){
-      Serial.println("Waiting for response");
-      delay(1000);
-    }
-    while (Serial2.available()){
-      output = (char)Serial2.read();
-      status += output;
-      delay(10);
-    }
-    Serial.println();
-    Serial.print("Status \t");
-    Serial.println(status);
-    delay(1000);
-    
-    Serial.println("");
-    // Wait a bit before scanning again
-    delay(5000);
-    
+    temperature(temp);
+    send_message(data_Sigfox, temp);
 }
