@@ -136,28 +136,29 @@ void detection_wifi(byte data_Sigfox[12]){
       Serial.print("RSSI:");
       Serial.print(rssi);
       Serial.println("");
-      Serial.print((rssi >>  0) & 0xFF,HEX);
-      Serial.print((rssi >>  8) & 0xFF,HEX);
+      Serial.println((rssi >>  0) & 0xFF,HEX);
+      Serial.println((rssi >>  8) & 0xFF,HEX);
 
       Serial.print("string version of rssi : ");
       Serial.println(String(rssi,HEX));
             
       data_Sigfox[6] =(rssi >>  0) & 0xFF;
             
-      data_Sigfox[7] = (rssi >>  8) & 0xFF;
+      //data_Sigfox[7] = (rssi >>  8) & 0xFF;
       Serial.println("");
             
     }
   }
 }
 
-void convFloatToHex(float x, byte res){
+byte convFloatToHex(float x){
   int integer = x * 10;
   Serial.print("Integer : ");
   Serial.println(integer);
-  res = integer & 0xFF;
+  byte res = integer & 0xFF;
   Serial.print("Hexa : ");
   Serial.println(res);
+  return res ;
 }
 
 void accelerometre(Adafruit_MMA8451 mma, byte data_Sigfox[12]){
@@ -174,26 +175,33 @@ void accelerometre(Adafruit_MMA8451 mma, byte data_Sigfox[12]){
 
   //Ajouter le formatage des données pour Sigfox
   
-  // data_Sigfox[8] = event.acceleration.x
-  convFloatToHex(event.acceleration.x, data_Sigfox[8]);
+  // data_Sigfox[7] = event.acceleration.x
+  byte res;
+  data_Sigfox[7] = convFloatToHex(event.acceleration.x);
+  Serial.print("data Sigfox 7 : ");
+  Serial.println(data_Sigfox[7]);
+  
+  // data_Sigfox[8] = event.acceleration.y
+  data_Sigfox[8] = convFloatToHex(event.acceleration.y);
   Serial.print("data Sigfox 8 : ");
   Serial.println(data_Sigfox[8]);
-  
+
   // data_Sigfox[9] = event.acceleration.y
-  convFloatToHex(event.acceleration.y, data_Sigfox[9]);
+  data_Sigfox[9] = convFloatToHex(event.acceleration.z);
   Serial.print("data Sigfox 9 : ");
   Serial.println(data_Sigfox[9]);
 }
 
 // A tester
-void convFloatToHexTemp(float x, int res){
+int convFloatToHexTemp(float x){
   int integer = x * 100;
   Serial.print("Integer : ");
   Serial.println(integer);
+  return integer ;
 }
 
 // Tester avec sigfox
-void temperature(int res){
+int temperature(){
   sensors_event_t humidity, temp;
   
   shtc3.getEvent(&humidity, &temp);// populate temp and humidity objects with fresh data
@@ -201,12 +209,13 @@ void temperature(int res){
   Serial.print("Temperature: "); Serial.print(temp.temperature); Serial.println(" degrees C");
   //Serial.print("Humidity: "); Serial.print(humidity.relative_humidity); Serial.println("% rH");
   float tmp = temp.temperature;
-  convFloatToHexTemp(tmp, res);
+  int res = convFloatToHexTemp(tmp);
   delay(1000);
+  return res ;
 }
 
 
-void send_message(byte data_Sigfox[12] , byte temp){
+void send_message(byte data_Sigfox[12] , int temp){
   
   sprintf(data_string, "AT$SF=%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%04x\r\n",data_Sigfox[0],data_Sigfox[1],data_Sigfox[2],data_Sigfox[3],data_Sigfox[4],data_Sigfox[5],data_Sigfox[6],data_Sigfox[7],data_Sigfox[8],data_Sigfox[9],temp); ; // A compléter
   Serial2.print(data_string);
@@ -238,6 +247,6 @@ void loop()
     int temp;
     detection_wifi(data_Sigfox);
     accelerometre(mma, data_Sigfox);
-    temperature(temp);
+    temp = temperature();
     send_message(data_Sigfox, temp);
 }
