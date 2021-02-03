@@ -133,12 +133,10 @@ void detection_wifi(byte data_Sigfox[12], byte data_Sigfox2[12]){
     Serial.println(String(rssi,HEX));
             
     data_Sigfox[6] =(rssi >>  0) & 0xFF;
-            
-    //data_Sigfox[7] = (rssi >>  8) & 0xFF;
-     Serial.println("");
+    Serial.println("");
 
-     //construction du message Sigfox pour l'adresse mac la 2eme + puissante
-       //construction du message Sigfox pour l'adresse mac la  + puissante
+    //construction du message Sigfox pour l'adresse mac la 2eme + puissante
+    //construction du message Sigfox pour l'adresse mac la  + puissante
     
     //Code Sigfox frame (MAC (6B) + RSSI (2B))
     bssid = WiFi.BSSIDstr(1);
@@ -162,9 +160,8 @@ void detection_wifi(byte data_Sigfox[12], byte data_Sigfox2[12]){
     Serial.println(String(rssi,HEX));
             
     data_Sigfox2[6] =(rssi >>  0) & 0xFF;
+
     Serial.println("");
-           
-    
   }
 }
 
@@ -234,11 +231,15 @@ int temperature(){
 
 void send_message(byte data_Sigfox[12] , int temp){
   
-  sprintf(data_string, "AT$SF=%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%04x\r\n",data_Sigfox[0],data_Sigfox[1],data_Sigfox[2],data_Sigfox[3],data_Sigfox[4],data_Sigfox[5],data_Sigfox[6],data_Sigfox[7],data_Sigfox[8],data_Sigfox[9],temp); ; // A compléter
-  Serial2.print(data_string);
-  Serial.println(sizeof(data_string));
+  String c = String("AT$SF=");
+  for(int i = 0; i < 10; i++){
+    c.concat(String(data_Sigfox[i], HEX));
+  }
+  c.concat(String(temp, HEX));
+  Serial2.print(c);
+  Serial.println(sizeof(c));
   Serial.println("Envoi");
-  Serial.println(data_string);
+  Serial.println(c);
              
   while (!Serial2.available()){
     Serial.println("Waiting for response");
@@ -271,7 +272,6 @@ void loop()
     //2eme message
     accelerometre(mma, data_Sigfox2);
     temp = temperature();
-    Serial.println("2eme message");
     send_message(data_Sigfox2, temp);
-
+    
 }
