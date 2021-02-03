@@ -52,6 +52,29 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 				html = f.read()
 				self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
 
+		if self.path == "/Temp":
+			self.send_response(200)
+			self.send_header("Content-type", "text/html")
+			self.end_headers()
+
+			with open('temperature_debut.html', 'r') as f:
+				my_str = f.read()
+
+			s = self.mysql.temperatures_html()
+
+			for i in range(len(s)):
+
+				my_str = my_str + "          ['"
+				my_str = my_str + str(s[i][1]) + "', " + str(s[i][0])
+				my_str = my_str + "],\n"
+
+			my_str = my_str + "       ])"
+
+
+			with open('temperature_fin.html', 'r') as f:
+				my_str = my_str + f.read()
+			self.wfile.write(bytes(str(my_str)+'\n', 'UTF-8'))
+
 	def do_POST(self):
 		"""Respond to a POST request."""
 		res = urllib.parse.urlparse(self.path)
@@ -60,9 +83,6 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 		self.send_response(200)
 		self.send_header("Content-type", "text/html")
 		self.end_headers()
-
-
-
 
 class MySQL():
 	def __init__(self, name):
@@ -90,8 +110,6 @@ class MySQL():
 		req = "select * from User"
 		print(req)
 		return self.c.execute(req).fetchall()
-
-
 
 	def insert(self,path,query):
 		print(query)
