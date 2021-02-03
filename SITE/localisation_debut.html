@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Configuration</title>
+  <title>Localisation</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -54,7 +54,7 @@
 
 
     .custom-image {
-      background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("https://i.ibb.co/SxMbqtW/config.jpg");
+      background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("https://i.ibb.co/J5Yc9ww/localisation.jpg");
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
@@ -127,8 +127,8 @@
 
   <div class="custom-image">
     <div class="custom-text">
-      <h1>Configuration</h1>
-      <p>Ajoutez des capteurs à votre superbe villa, gérez votre compte et bien d'autres fonctionnalités</p>
+      <h1>Localisation</h1>
+      <p>Suivez le parcours de votre animal</p>
     </div>
   </div>
 
@@ -136,7 +136,7 @@
     <br>
     <br>
     <br>
-    <h3>Localisation de votre logement</h3>
+    <h3>Localisation de l'animal</h3>
     <br>
     <div id="mapid" style="width: 100%; height: 400px;"></div>
     <div>
@@ -160,15 +160,6 @@
       win.focus();
     }
 
-    function copier(id){
-      var r = document.createRange();
-      r.selectNode(document.getElementById(id));
-      window.getSelection().removeAllRanges();
-      window.getSelection().addRange(r);
-      document.execCommand('copy');
-      window.getSelection().removeAllRanges();
-      alert("Copie effectuée (emmanuel.collin@etu.upmc)");
-      }
   </script>
   <script>
   	var mymap = L.map('mapid').setView([
