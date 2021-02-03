@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Configuration</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <style>
+    body {margin:0;font-family:Arial}
+
+    body, html {
+      height: 100%;
+      margin: 0;
+    }
+
+    @media screen and (min-width: 601px) and (min-height: 601px) {
+      div.custom-text {
+        font-size: 25px;
+      }
+      .custom-text h1 {
+        font-size: 70px;
+      }
+      .custom-image {
+        height: 25%;
+      }
+    }
+    @media screen and (max-width: 600px) {
+      div.custom-text {
+        font-size: 18px;
+      }
+      .custom-text h1 {
+        font-size: 40px;
+      }
+
+      .custom-image {
+        height: 45%;
+      }
+    }
+
+    @media screen and (max-height: 600px) and (min-width: 601px){
+      div.custom-text {
+        font-size: 18px;
+      }
+      .custom-text h1 {
+        font-size: 40px;
+      }
+      .custom-image {
+        height: 65%;
+      }
+    }
+
+
+    .custom-image {
+      background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("https://i.ibb.co/SxMbqtW/config.jpg");
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      position: relative;
+    }
+
+    .custom-text {
+      text-align: center;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+    }
+
+    .topnav {
+      overflow: hidden;
+      background-color: #333;
+    }
+
+    .topnav a {
+      float: left;
+      display: block;
+      color: #f2f2f2;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 17px;
+    }
+
+    .active {
+      background-color: #3C5FE0;
+      color: white;
+    }
+
+    .topnav .icon {
+      display: none;
+    }
+
+
+    .topnav a:hover {
+      background-color: #555;
+      color: white;
+    }
+      .topnav.responsive a {
+        float: none;
+        display: block;
+        text-align: left;
+      }
+      .topnav.responsive {float: none;}
+      .topnav.responsive {position: relative;}
+      .topnav.responsive {
+        display: block;
+        width: 100%;
+        text-align: left;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="topnav" id="myTopnav">
+    <a href="#accueil" <button onclick="charger_accueil()">Accueil</button></a>
+    <a href="#consommation" <button onclick="charger_consommation()">Consommation</button></a>
+    <a href="#capteurs" <button onclick="charger_capteurs()">Capteurs</button></a>
+    <a href="#economies" <button onclick="charger_economies()">Economies</button></a>
+    <a href="#configuration" class="active" <button onclick="charger_configuration()">Configuration</button></a>
+  </div>
+
+  <div class="custom-image">
+    <div class="custom-text">
+      <h1>Configuration</h1>
+      <p>Ajoutez des capteurs à votre superbe villa, gérez votre compte et bien d'autres fonctionnalités</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <br>
+    <br>
+    <br>
+    <h3>Localisation de votre logement</h3>
+    <br>
+    <div id="mapid" style="width: 100%; height: 400px;"></div>
+    <div>
+    <p></p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-4">
+        <h3>D'autres capteurs ?</h3>
+        <button onclick="charger_add()">Ajouter un capteur</button>
+      </div>
+      <div class="col-sm-4">
+        <h3>Autres options</h3>
+        <p>Contactez directement Emmanuel Collin :</p>
+        <a id="email" href="#" onclick="copier('email');return false;">emmanuel.collin@etu.upmc.fr</a>
+      </div>
+      <div class="col-sm-4">
+        <h3>A propos du créateur</h3>
+        <p>Réalisé par Emmanuel Collin</p>
+        <p>Suivez-moi sur Github : <a href="https://github.com/Serial-DeV" target="_blank"<button onclick="">@Serial-DeV</button></a></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    function charger_accueil() {
+          location.replace("./")
+    }
+    function charger_consommation() {
+          location.replace("./consommation")
+    }
+    function charger_capteurs() {
+          location.replace("./capteurs")
+    }
+    function charger_economies() {
+          location.replace("./economies")
+    }
+    function charger_configuration() {
+          location.replace("./configuration")
+    }
+    function charger_add() {
+          location.replace("./add")
+    }
+    function copier(id){
+      var r = document.createRange();
+      r.selectNode(document.getElementById(id));
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(r);
+      document.execCommand('copy');
+      window.getSelection().removeAllRanges();
+      alert("Copie effectuée (emmanuel.collin@etu.upmc)");
+      }
+  </script>
+  <script>
+  	var mymap = L.map('mapid').setView([

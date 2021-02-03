@@ -84,6 +84,34 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			tmp = open("affichage_temp_finale.html", "w")
 			tmp.write(my_str)
 
+		if self.path == "/Loc":
+			self.send_response(200)
+			self.send_header("Content-type", "text/html")
+			self.end_headers()
+
+			with open('localisation_debut.html', 'r') as f:
+				my_str = f.read()
+
+
+			addr = "addr"
+			ville = "ville"
+			cp = "cp"
+			lat = str(-30)
+			long = str(-30)
+
+			my_str += lat + "," + long + "], 11);\nL.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {\n\tmaxZoom: 18,\n\tattribution: 'Map data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, ' + 'Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>',\n\tid: 'mapbox/streets-v11',\n\ttileSize: 512,\n\tzoomOffset: -1\n}).addTo(mymap);\nL.marker([" + lat + ", " + long + "]).addTo(mymap)\n\t.bindPopup(\"<b>" + addr + "</b><br />" + ville + " " + cp
+
+			with open('localisation_fin.html', 'r') as f:
+				my_str += f.read()
+
+			self.wfile.write(bytes(str(my_str)+'\n', 'UTF-8'))
+
+			tmp = open("config_test.html", "w")
+			tmp.write(my_str)
+
+
+
+
 	def do_POST(self):
 		"""Respond to a POST request."""
 		res = urllib.parse.urlparse(self.path)
