@@ -120,10 +120,9 @@
 
   <div class="topnav" id="myTopnav">
     <a href="#accueil" <button onclick="charger_accueil()">Accueil</button></a>
-    <a href="#consommation" <button onclick="charger_consommation()">Consommation</button></a>
-    <a href="#capteurs" <button onclick="charger_capteurs()">Capteurs</button></a>
-    <a href="#economies" <button onclick="charger_economies()">Economies</button></a>
-    <a href="#configuration" class="active" <button onclick="charger_configuration()">Configuration</button></a>
+    <a href="#localisation" class="active" <button onclick="charger_localisation()">Localisation</button></a>
+    <a href="#temperature" <button onclick="charger_temperature()">Température</button></a>
+    <a href="#github" <button onclick="charger_github()">Github</button></a>
   </div>
 
   <div class="custom-image">
@@ -144,45 +143,23 @@
     <p></p>
     </div>
   </div>
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-4">
-        <h3>D'autres capteurs ?</h3>
-        <button onclick="charger_add()">Ajouter un capteur</button>
-      </div>
-      <div class="col-sm-4">
-        <h3>Autres options</h3>
-        <p>Contactez directement Emmanuel Collin :</p>
-        <a id="email" href="#" onclick="copier('email');return false;">emmanuel.collin@etu.upmc.fr</a>
-      </div>
-      <div class="col-sm-4">
-        <h3>A propos du créateur</h3>
-        <p>Réalisé par Emmanuel Collin</p>
-        <p>Suivez-moi sur Github : <a href="https://github.com/Serial-DeV" target="_blank"<button onclick="">@Serial-DeV</button></a></p>
-      </div>
-    </div>
-  </div>
 
   <script>
 
     function charger_accueil() {
-          location.replace("./")
+          location.replace("./Accueil")
     }
-    function charger_consommation() {
-          location.replace("./consommation")
+    function charger_localisation() {
+          location.replace("./Loc")
     }
-    function charger_capteurs() {
-          location.replace("./capteurs")
+    function charger_temperature() {
+          location.replace("./Temp")
     }
-    function charger_economies() {
-          location.replace("./economies")
+    function charger_github() {
+      var win = window.open("https://github.com/Polytech-Sorbonne/EI-SE5_2020-2021_ePet", '_blank');
+      win.focus();
     }
-    function charger_configuration() {
-          location.replace("./configuration")
-    }
-    function charger_add() {
-          location.replace("./add")
-    }
+
     function copier(id){
       var r = document.createRange();
       r.selectNode(document.getElementById(id));
@@ -195,7 +172,7 @@
   </script>
   <script>
   	var mymap = L.map('mapid').setView([
--30,-30], 11);
+1,1], 11);
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
 	maxZoom: 18,
 	attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' + 'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -203,8 +180,7 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 	tileSize: 512,
 	zoomOffset: -1
 }).addTo(mymap);
-L.marker([-30, -30]).addTo(mymap)
-	.bindPopup("<b>addr</b><br />ville cp").openPopup();
+L.polygon([[51.509, -0.08],[51.503, -0.06],[51.51, -0.047]]).addTo(mymap);
 
 
   	var popup = L.popup();

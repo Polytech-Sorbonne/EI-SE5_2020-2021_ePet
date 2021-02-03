@@ -92,14 +92,31 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			with open('localisation_debut.html', 'r') as f:
 				my_str = f.read()
 
+			s = self.mysql.localisation_html()
 
-			addr = "addr"
-			ville = "ville"
-			cp = "cp"
-			lat = str(-30)
-			long = str(-30)
 
-			my_str += lat + "," + long + "], 11);\nL.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {\n\tmaxZoom: 18,\n\tattribution: 'Map data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, ' + 'Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>',\n\tid: 'mapbox/streets-v11',\n\ttileSize: 512,\n\tzoomOffset: -1\n}).addTo(mymap);\nL.marker([" + lat + ", " + long + "]).addTo(mymap)\n\t.bindPopup(\"<b>" + addr + "</b><br />" + ville + " " + cp
+
+
+
+			#for i in range(len(s)):
+
+			x0 = s[0][0]
+			y0 = s[0][1]
+			x1 = s[0][1]
+			y1 = s[0][2]
+			x2 = s[0][3]
+			y2 = s[0][4]
+			x2 = s[0][5]
+			y2 = s[0][6]
+			print(x0)
+
+
+
+			lat = str(x0)
+			long = str(y0)
+
+			my_str += lat + "," + long + "], 11);\nL.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {\n\tmaxZoom: 18,\n\tattribution: 'Map data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, ' + 'Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>',\n\tid: 'mapbox/streets-v11',\n\ttileSize: 512,\n\tzoomOffset: -1\n}).addTo(mymap);\nL.polygon([[51.509, -0.08],[51.503, -0.06],[51.51, -0.047]]).addTo(mymap);"
+
 
 			with open('localisation_fin.html', 'r') as f:
 				my_str += f.read()
@@ -150,6 +167,11 @@ class MySQL():
 
 	def temperature_html(self):
 		req = "select date_insert, temp from Temperature;"
+		s = self.c.execute(req).fetchall()
+		return s
+
+	def localisation_html(self):
+		req = "select * from Perimeter;"
 		s = self.c.execute(req).fetchall()
 		return s
 
