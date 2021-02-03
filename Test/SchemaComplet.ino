@@ -17,6 +17,7 @@ Adafruit_MMA8451 mma = Adafruit_MMA8451();
 
 // Message SigFox
 byte data_Sigfox[12];
+byte data_Sigfox2[12];
 char data_string[12];
 String status = "";
 char output;
@@ -94,7 +95,7 @@ int convStringToInt(char s){
   return 0;
 }
 
-void detection_wifi(byte data_Sigfox[12]){
+void detection_wifi(byte data_Sigfox[12], byte data_Sigfox2[12]){
   
   Serial.println("scan start");
   String bssid;
@@ -106,48 +107,64 @@ void detection_wifi(byte data_Sigfox[12]){
   if (n == 0) {
     Serial.println("no networks found");
   } else {
-    Serial.print(n);
-    Serial.println(" networks found");
+      
+    // Print BSSID and RSSI for each network found      
+    //construction du message Sigfox pour l'adresse mac la  + puissante
     
-    for (int i = 0; i < 2; ++i) {
-      // Print BSSID and RSSI for each network found
-      Serial.print(i + 1);
-      Serial.print(": ");
-      Serial.print(WiFi.BSSIDstr(i));
-      bssid = WiFi.BSSIDstr(i);
-      Serial.print(" (");
-      Serial.print(WiFi.RSSI(i));
-      rssi = WiFi.RSSI(i);
-      Serial.println(")");
-      Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN)?" ":"*");
-      
-      //construction du message Sigfox
-      //Code Sigfox frame (MAC (6B) + RSSI (2B))
-      for (int j = 0; j < 6; j++){
-        String xval = getValue(bssid, ':', j);
-        byte v1 = convStringToInt(xval[0]) & 0xFF;
-        byte v2 = convStringToInt(xval[1]) & 0xFF;
-        data_Sigfox[j] = (v1 << 4 ) + v2 ;
-        Serial.print("hex version : ");
-        Serial.print(data_Sigfox[j],HEX);
-        Serial.println("");
-      }
-      
-      Serial.print("RSSI:");
-      Serial.print(rssi);
+    //Code Sigfox frame (MAC (6B) + RSSI (2B))
+    bssid = WiFi.BSSIDstr(0);
+    rssi = WiFi.RSSI(0);
+    for (int j = 0; j < 6; j++){
+      String xval = getValue(bssid, ':', j);
+      byte v1 = convStringToInt(xval[0]) & 0xFF;
+      byte v2 = convStringToInt(xval[1]) & 0xFF;
+      data_Sigfox[j] = (v1 << 4 ) + v2 ;
+      Serial.print("hex version : ");
+      Serial.print(data_Sigfox[j],HEX);
       Serial.println("");
-      Serial.println((rssi >>  0) & 0xFF,HEX);
-      Serial.println((rssi >>  8) & 0xFF,HEX);
-
-      Serial.print("string version of rssi : ");
-      Serial.println(String(rssi,HEX));
-            
-      data_Sigfox[6] =(rssi >>  0) & 0xFF;
-            
-      //data_Sigfox[7] = (rssi >>  8) & 0xFF;
-      Serial.println("");
-            
     }
+      
+    Serial.print("RSSI:");
+    Serial.print(rssi);
+    Serial.println("");
+    Serial.println((rssi >>  0) & 0xFF,HEX);
+    Serial.println((rssi >>  8) & 0xFF,HEX);
+    Serial.print("string version of rssi : ");
+    Serial.println(String(rssi,HEX));
+            
+    data_Sigfox[6] =(rssi >>  0) & 0xFF;
+            
+    //data_Sigfox[7] = (rssi >>  8) & 0xFF;
+     Serial.println("");
+
+     //construction du message Sigfox pour l'adresse mac la 2eme + puissante
+       //construction du message Sigfox pour l'adresse mac la  + puissante
+    
+    //Code Sigfox frame (MAC (6B) + RSSI (2B))
+    bssid = WiFi.BSSIDstr(1);
+    rssi = WiFi.RSSI(1);
+    for (int j = 0; j < 6; j++){
+      String xval = getValue(bssid, ':', j);
+      byte v1 = convStringToInt(xval[0]) & 0xFF;
+      byte v2 = convStringToInt(xval[1]) & 0xFF;
+      data_Sigfox2[j] = (v1 << 4 ) + v2 ;
+      Serial.print("hex version : ");
+      Serial.print(data_Sigfox2[j],HEX);
+      Serial.println("");
+    }
+      
+    Serial.print("RSSI:");
+    Serial.print(rssi);
+    Serial.println("");
+    Serial.println((rssi >>  0) & 0xFF,HEX);
+    Serial.println((rssi >>  8) & 0xFF,HEX);
+    Serial.print("string version of rssi : ");
+    Serial.println(String(rssi,HEX));
+            
+    data_Sigfox2[6] =(rssi >>  0) & 0xFF;
+    Serial.println("");
+           
+    
   }
 }
 
@@ -245,8 +262,16 @@ void send_message(byte data_Sigfox[12] , int temp){
 void loop()
 { 
     int temp;
-    detection_wifi(data_Sigfox);
+     //1er message 
+    detection_wifi(data_Sigfox,data_Sigfox2);
     accelerometre(mma, data_Sigfox);
     temp = temperature();
+    Serial.println("1er message");
     send_message(data_Sigfox, temp);
+    //2eme message
+    accelerometre(mma, data_Sigfox2);
+    temp = temperature();
+    Serial.println("2eme message");
+    send_message(data_Sigfox2, temp);
+
 }
