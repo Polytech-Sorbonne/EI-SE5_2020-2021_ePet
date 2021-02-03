@@ -60,7 +60,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			with open('temperature_debut.html', 'r') as f:
 				my_str = f.read()
 
-			s = self.mysql.temperatures_html()
+			s = self.mysql.temperature_html()
 
 			for i in range(len(s)):
 
@@ -68,12 +68,17 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 				my_str = my_str + str(s[i][1]) + "', " + str(s[i][0])
 				my_str = my_str + "],\n"
 
-			my_str = my_str + "       ])"
+				my_str = my_str + "       ])"
+
+				my_str = my_str + "]);\nvar options = {\ntitle: \'" + " Titre " + "\'\n};"
 
 
 			with open('temperature_fin.html', 'r') as f:
 				my_str = my_str + f.read()
 			self.wfile.write(bytes(str(my_str)+'\n', 'UTF-8'))
+
+			tmp = open("affichage_temp_finale.html", "w")
+			tmp.write(my_str)
 
 	def do_POST(self):
 		"""Respond to a POST request."""
@@ -110,6 +115,11 @@ class MySQL():
 		req = "select * from User"
 		print(req)
 		return self.c.execute(req).fetchall()
+
+	def temperature_html(self):
+		req = "select date_insert, temp from Temperature;"
+		s = self.c.execute(req).fetchall()
+		return s
 
 	def insert(self,path,query):
 		print(query)
