@@ -310,9 +310,9 @@ img {
 
   <div class="topnav" id="myTopnav">
     <a href="#accueil" class="active" <button onclick="charger_accueil()">Accueil</button></a>
-    <a href="#consommation" <button onclick="charger_consommation()">Localisation</button></a>
-    <a href="#capteurs" <button onclick="charger_capteurs()">Température</button></a>
-    <a href="#economies" <button onclick="charger_economies()">Github</button></a>
+    <a href="#localisation" <button onclick="charger_localisation()">Localisation</button></a>
+    <a href="#temperature" <button onclick="charger_temperature()">Température</button></a>
+    <a href="#github" <button onclick="charger_github()">Github</button></a>
   </div>
 
   <div class="custom-image">
@@ -334,7 +334,7 @@ img {
     <div class="col-sm-4">
     <div class="containerx">
     <label>
-    <img class="cursor" src="https://i.ibb.co/J5Yc9ww/localisation.jpg" onclick="charger_consommation()" style="width:100%"><div class="overlayx">Localisation</div><div class="overlayy">Localisez votre animal</div>
+    <img class="cursor" src="https://i.ibb.co/J5Yc9ww/localisation.jpg" onclick="charger_localisation()" style="width:100%"><div class="overlayx">Localisation</div><div class="overlayy">Localisez votre animal</div>
     </label>
     </div>
     </div>
@@ -342,7 +342,7 @@ img {
     <div class="col-sm-4">
     <div class="containerx">
     <label>
-    <img class="cursor" src="https://i.ibb.co/HPf9CWt/temperature.jpg" onclick="charger_capteurs()" style="width:100%"><div class="overlayx">Température</div><div class="overlayy">Consultez la température de votre animal</div>
+    <img class="cursor" src="https://i.ibb.co/HPf9CWt/temperature.jpg" onclick="charger_temperature()" style="width:100%"><div class="overlayx">Température</div><div class="overlayy">Consultez la température de votre animal</div>
     </label>
     </div>
     </div>
@@ -350,7 +350,7 @@ img {
     <div class="col-sm-4">
     <div class="containerx">
     <label>
-    <img class="cursor" src="https://i.ibb.co/Wgy7mNg/github.jpg" onclick="charger_git()" style="width:100%"><div class="overlayx">Github</div><div class="overlayy">Découvrez notre projet</div>
+    <img class="cursor" src="https://i.ibb.co/Wgy7mNg/github.jpg" onclick="charger_github()" style="width:100%"><div class="overlayx">Github</div><div class="overlayy">Découvrez notre projet</div>
     </label>
     </div>
     </div>
@@ -360,25 +360,16 @@ img {
   <script>
 
     function charger_accueil() {
-          location.replace("./")
+          location.replace("./Accueil")
     }
-    function charger_consommation() {
-          location.replace("./consommation")
+    function charger_localisation() {
+          location.replace("./Loc")
     }
-    function charger_capteurs() {
-          location.replace("./capteurs")
+    function charger_temperature() {
+          location.replace("./Temp")
     }
-    function charger_economies() {
-          location.replace("./economies")
-    }
-    function charger_configuration() {
-          location.replace("./configuration")
-    }
-    function charger_add() {
-          location.replace("./add")
-    }
-    function charger_git() {
-      var win = window.open("https://github.com/Serial-DeV", '_blank');
+    function charger_github() {
+      var win = window.open("https://github.com/Polytech-Sorbonne/EI-SE5_2020-2021_ePet", '_blank');
       win.focus();
     }
 
