@@ -100,22 +100,23 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 
 			#for i in range(len(s)):
 
-			x0 = s[0][0]
 			y0 = s[0][1]
-			x1 = s[0][1]
-			y1 = s[0][2]
-			x2 = s[0][3]
-			y2 = s[0][4]
-			x2 = s[0][5]
-			y2 = s[0][6]
-			print(x0)
+			x0 = s[0][2]
+
+			y1 = s[0][3]
+			x1 = s[0][4]
+
+			y2 = s[0][5]
+			x2 = s[0][6]
+
+			y3 = s[0][7]
+			x3 = s[0][8]
 
 
+			long = str(x0)
+			lat = str(y0)
 
-			lat = str(x0)
-			long = str(y0)
-
-			my_str += lat + "," + long + "], 11);\nL.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {\n\tmaxZoom: 18,\n\tattribution: 'Map data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, ' + 'Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>',\n\tid: 'mapbox/streets-v11',\n\ttileSize: 512,\n\tzoomOffset: -1\n}).addTo(mymap);\nL.marker([" + lat + "," + long + "]).addTo(mymap)\nL.polygon([[51.509, -0.08],[51.503, -0.06],[51.51, -0.047]]).addTo(mymap);"
+			my_str += lat + "," + long + "], 11);\nL.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {\n\tmaxZoom: 18,\n\tattribution: 'Map data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, ' + 'Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>',\n\tid: 'mapbox/streets-v11',\n\ttileSize: 512,\n\tzoomOffset: -1\n}).addTo(mymap);\nL.marker([" + lat + "," + long + "]).addTo(mymap)\nL.polygon([[" + str(y1) + "," + str(x1) + "],[" + str(y2) + "," + str(x2) + "],[" + str(y3) + "," + str(x3) + "]]).addTo(mymap);"
 
 
 			with open('localisation_fin.html', 'r') as f:
