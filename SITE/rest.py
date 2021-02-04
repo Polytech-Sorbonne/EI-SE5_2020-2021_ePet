@@ -59,6 +59,16 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			with open('log.html', 'r') as f:
 				html = f.read()
 				self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
+				res = urllib.parse.urlparse(self.path)
+				rep = self.mysql.select_user(res.path)
+				print('rep')
+
+				for i in range(len(rep)):
+					print(rep[i][2]) #le nom du User
+					print(rep[i][1]) #le mot de passe correspondant
+
+
+
 
 		if self.path == "/Temp":
 			self.send_response(200)
