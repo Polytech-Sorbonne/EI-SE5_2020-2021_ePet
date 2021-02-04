@@ -31,7 +31,7 @@ TwoWire I2CBME = TwoWire(0);
 
 void setup()
 {
-      // Note the format for setting a serial port is as follows: Serial2.begin(baud-rate, protocol, RX pin, TX pin);
+    // Note the format for setting a serial port is as follows: Serial2.begin(baud-rate, protocol, RX pin, TX pin);
     Serial2.begin(9600);
     Serial.begin(115200);
     pinMode(RX0, INPUT);
@@ -193,21 +193,21 @@ void accelerometre(Adafruit_MMA8451 mma, byte data_Sigfox[12]){
   byte res;
   data_Sigfox[7] = convFloatToHex(event.acceleration.x);
   Serial.print("data Sigfox 7 : ");
-  Serial.println(data_Sigfox[7]);
+  Serial.println(data_Sigfox[7], HEX);
   
   // data_Sigfox[8] = event.acceleration.y
   data_Sigfox[8] = convFloatToHex(event.acceleration.y);
   Serial.print("data Sigfox 8 : ");
-  Serial.println(data_Sigfox[8]);
+  Serial.println(data_Sigfox[8], HEX);
 
   // data_Sigfox[9] = event.acceleration.y
   data_Sigfox[9] = convFloatToHex(event.acceleration.z);
   Serial.print("data Sigfox 9 : ");
-  Serial.println(data_Sigfox[9]);
+  Serial.println(data_Sigfox[9], HEX);
 }
 
 // A tester
-int convFloatToHexTemp(float x){
+int convFloatToInt(float x){
   int integer = x * 100;
   Serial.print("Integer : ");
   Serial.println(integer);
@@ -223,7 +223,7 @@ int temperature(){
   Serial.print("Temperature: "); Serial.print(temp.temperature); Serial.println(" degrees C");
   //Serial.print("Humidity: "); Serial.print(humidity.relative_humidity); Serial.println("% rH");
   float tmp = temp.temperature;
-  int res = convFloatToHexTemp(tmp);
+  int res = convFloatToInt(tmp);
   delay(1000);
   return res ;
 }
@@ -233,11 +233,17 @@ void send_message(byte data_Sigfox[12] , int temp){
   
   String c = String("AT$SF=");
   for(int i = 0; i < 10; i++){
+    if(data_Sigfox[i] < 16){
+      c.concat(String('0'));  
+    }
     c.concat(String(data_Sigfox[i], HEX));
+  }
+  if (temp < 4096) {
+   c.concat(String('0')); 
   }
   c.concat(String(temp, HEX));
   Serial2.print(c);
-  Serial.println(sizeof(c));
+  //Serial.println(sizeof(c));
   Serial.println("Envoi");
   Serial.println(c);
              
