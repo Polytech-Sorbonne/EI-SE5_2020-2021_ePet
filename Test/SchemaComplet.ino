@@ -99,7 +99,7 @@ void detection_wifi(byte data_Sigfox[12], byte data_Sigfox2[12]){
   
   Serial.println("scan start");
   String bssid;
-  uint8_t rssi;
+  int8_t rssi;
     
   // WiFi.scanNetworks will return the number of networks found
   int n = WiFi.scanNetworks();
