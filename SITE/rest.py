@@ -52,6 +52,14 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 				html = f.read()
 				self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
 
+		if self.path == "/Log" :
+			self.send_response(200)
+			self.send_header("Content-type", "text/html")
+			self.end_headers()
+			with open('log.html', 'r') as f:
+				html = f.read()
+				self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
+
 		if self.path == "/Temp":
 			self.send_response(200)
 			self.send_header("Content-type", "text/html")
