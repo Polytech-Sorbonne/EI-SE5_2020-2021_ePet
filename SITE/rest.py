@@ -240,9 +240,11 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 				else:
 					print(int(rep[i][0]), " différent de ", int(query['id'][0]))
 
+
+
 			if (valide):
 				print("C'est valide")
-				id_utilisateur = query['id'][0]
+				id_utilisateur = int(query['id'][0])
 				self.send_response(200)
 				self.send_header("Content-type", "text/html")
 				self.end_headers()
@@ -294,6 +296,12 @@ class MySQL():
 		req = "select * from User"
 		print(req)
 		return self.c.execute(req).fetchall()
+
+	def select_animals(self):
+		req = "select name from Animal where owner=id_utilisateur;"
+		s = self.c.execute(req).fetchall()
+		print('s',s)
+		return s
 
 	def temperature_html(self):
 		req = "select date_insert, temp from Temperature;"
