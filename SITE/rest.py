@@ -234,6 +234,22 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 				#print(rep[i][1]) #le mot de passe correspondant
 			if valide:
 				print("C'est valide")
+				self.send_response(200)
+				self.send_header("Content-type", "text/html")
+				self.end_headers()
+				with open('accueil.html', 'r') as f:
+					html = f.read()
+					self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
+
+
+			else:
+				self.send_response(200)
+				self.send_header("Content-type", "text/html")
+				self.end_headers()
+				with open('log-error.html', 'r') as f:
+					html = f.read()
+					self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
+
 
 
 
