@@ -59,13 +59,13 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			with open('log.html', 'r') as f:
 				html = f.read()
 				self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
-				res = urllib.parse.urlparse(self.path)
-				rep = self.mysql.select_user(res.path)
-				print('rep')
+				#res = urllib.parse.urlparse(self.path)
+				#rep = self.mysql.select_user(res.path)
+				#print('rep')
 
-				for i in range(len(rep)):
-					print(rep[i][2]) #le nom du User
-					print(rep[i][1]) #le mot de passe correspondant
+				#for i in range(len(rep)):
+					#print(rep[i][2]) #le nom du User
+					#print(rep[i][1]) #le mot de passe correspondant
 
 
 
@@ -206,14 +206,38 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			print(query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
 
 
-
-
-
-
-
 			self.send_response(200)
 			self.send_header("Content-type", "text/html")
 			self.end_headers()
+
+		elif self.path == "/index.html":
+			print("Validation")
+			q = self.rfile.read(int(self.headers['content-length'])).decode(encoding="utf-8")
+			query = urllib.parse.parse_qs(q,keep_blank_values=1,encoding='utf-8')
+			print(query)
+			print(query['user'])
+
+			res = urllib.parse.urlparse(self.path)
+			rep = self.mysql.select_user(res.path)
+			print('rep')
+
+			valide = False
+			print (rep)
+			print (rep[0][1])
+
+			for i in range(len(rep)):
+				if (rep[i][2] == query['user'][0]):
+					if (rep[i][1] == query['password'][0]):
+						valide = True
+						break
+				#print(rep[i][2]) #le nom du User
+				#print(rep[i][1]) #le mot de passe correspondant
+			if valide:
+				print("C'est valide")
+
+
+
+
 
 
 
