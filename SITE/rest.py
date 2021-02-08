@@ -12,6 +12,8 @@ VARIABLE_LABEL = "temperature"
 TOKEN = "BBFF-7AY67IDc1sw2hLeaILMxUMTdHHkdBr"
 DELAY = 5  # Delay in seconds
 
+id_utilisateur = -1
+
 class MyHandler(http.server.BaseHTTPRequestHandler):
 	def __init__(self, *args, **kwargs):
 		self.mysql = MySQL('epet.db')
@@ -214,26 +216,33 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			print("Validation")
 			q = self.rfile.read(int(self.headers['content-length'])).decode(encoding="utf-8")
 			query = urllib.parse.parse_qs(q,keep_blank_values=1,encoding='utf-8')
-			print(query)
-			print(query['user'])
+
 
 			res = urllib.parse.urlparse(self.path)
 			rep = self.mysql.select_user(res.path)
-			print('rep')
+
 
 			valide = False
-			print (rep)
-			print (rep[0][1])
+			#print('rep[0][0]')
+			#print(rep[0][0])
+			#print('rep')
+			#print (rep)
+			#print (rep[0][1])
 
 			for i in range(len(rep)):
-				if (rep[i][2] == query['user'][0]):
+
+				if (int(rep[i][0]) == int(query['id'][0])):
+					print('id identiques')
 					if (rep[i][1] == query['password'][0]):
+						print('id et mdp identiques')
 						valide = True
 						break
-				#print(rep[i][2]) #le nom du User
-				#print(rep[i][1]) #le mot de passe correspondant
-			if valide:
+				else:
+					print(int(rep[i][0]), " différent de ", int(query['id'][0]))
+
+			if (valide):
 				print("C'est valide")
+				id_utilisateur = query['id'][0]
 				self.send_response(200)
 				self.send_header("Content-type", "text/html")
 				self.end_headers()
