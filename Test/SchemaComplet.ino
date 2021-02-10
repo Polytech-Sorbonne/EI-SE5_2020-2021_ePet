@@ -190,20 +190,20 @@ void accelerometre(Adafruit_MMA8451 mma, byte data_Sigfox[12]){
   //Ajouter le formatage des données pour Sigfox
   
   // data_Sigfox[7] = event.acceleration.x
-  byte res;
-  data_Sigfox[7] = convFloatToHex(event.acceleration.x);
-  Serial.print("data Sigfox 7 : ");
-  Serial.println(data_Sigfox[7], HEX);
-  
-  // data_Sigfox[8] = event.acceleration.y
-  data_Sigfox[8] = convFloatToHex(event.acceleration.y);
-  Serial.print("data Sigfox 8 : ");
-  Serial.println(data_Sigfox[8], HEX);
-
-  // data_Sigfox[9] = event.acceleration.y
-  data_Sigfox[9] = convFloatToHex(event.acceleration.z);
-  Serial.print("data Sigfox 9 : ");
-  Serial.println(data_Sigfox[9], HEX);
+//  byte res;
+//  data_Sigfox[7] = convFloatToHex(event.acceleration.x);
+//  Serial.print("data Sigfox 7 : ");
+//  Serial.println(data_Sigfox[7], HEX);
+//  
+//  // data_Sigfox[8] = event.acceleration.y
+//  data_Sigfox[8] = convFloatToHex(event.acceleration.y);
+//  Serial.print("data Sigfox 8 : ");
+//  Serial.println(data_Sigfox[8], HEX);
+//
+//  // data_Sigfox[9] = event.acceleration.y
+//  data_Sigfox[9] = convFloatToHex(event.acceleration.z);
+//  Serial.print("data Sigfox 9 : ");
+//  Serial.println(data_Sigfox[9], HEX);
 }
 
 // A tester
@@ -230,23 +230,26 @@ int temperature(){
 
 
 void send_message(byte data_Sigfox[12] , int temp){
-  
-  String c = String("AT$SF=");
-  for(int i = 0; i < 10; i++){
-    if(data_Sigfox[i] < 16){
-      c.concat(String('0'));  
-    }
-    c.concat(String(data_Sigfox[i], HEX));
-  }
-  if (temp < 4096) {
-   c.concat(String('0')); 
-  }
-  c.concat(String(temp, HEX));
+
+   char c[12];
+   snprintf(c, 12 * sizeof(byte), "AT$SF=%02x%02x\r\n",data_Sigfox[0],data_Sigfox[1]) ;
+
+//  String c = String("AT$SF=");
+//  for(int i = 0; i < 7; i++){
+//    if(data_Sigfox[i] < 16){
+//      c.concat(String('0'));  
+//    }
+//    c.concat(String(data_Sigfox[i], HEX));
+//  }
+//  if (temp < 4096) {
+//   c.concat(String('0')); 
+//  }
+//  c.concat(String(temp, HEX));
   Serial2.print(c);
   //Serial.println(sizeof(c));
   Serial.println("Envoi");
   Serial.println(c);
-             
+  delay(1000);    
   while (!Serial2.available()){
     Serial.println("Waiting for response");
     delay(1000);
