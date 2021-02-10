@@ -187,6 +187,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 
 
 	def do_POST(self):
+		global id_utilisateur
 		# """Respond to a POST request."""
 		# res = urllib.parse.urlparse(self.path)
 		# query = urllib.parse.parse_qs(res.query)
@@ -333,7 +334,7 @@ class MySQL():
 		return self.c.execute(req).fetchall()
 
 	def select_animals(self):
-		req = "select name from Animal where owner = 1;"
+		req = "select name from Animal where owner = +" + str(id_utilisateur) + ";"
 		s = self.c.execute(req).fetchall()
 		return s
 
