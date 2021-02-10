@@ -104,10 +104,38 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			tmp = open("affichage_temp_finale.html", "w")
 			tmp.write(my_str)
 
-			if self.path == "select_animal":
-				a = self.mysql.select_animals()
-				print('a')
-				print(a)
+		if self.path == "/select_animal":
+			self.send_response(200)
+			self.send_header("Content-type", "text/html")
+			self.end_headers()
+
+			a = self.mysql.select_animals()
+			print('a')
+			print(a)
+
+			for i in range(len(a)):
+				for j in range(len(a[i])):
+					a1 = a[i][j]
+					print('a1',a1)
+					a2 = a[i][j]
+					print('a2',a2)
+
+			#if self.path == "/select_animal":
+				#self.send_response(200)
+				#self.send_header("Content-type", "text/html")
+				#self.end_headers()
+
+				#a = self.mysql.select_animals()
+				#print('a')
+				#print(a)
+
+				#for i in range(len(a)):
+					#for j in range(len(a[i])):
+						#a1 = a[i][j]
+						#print('a1',a1)
+						#a2 = a[i][j]
+						#print('a2',a2)
+
 
 
 
