@@ -104,6 +104,13 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			tmp = open("affichage_temp_finale.html", "w")
 			tmp.write(my_str)
 
+
+			#a = self.mysql.select_animals()
+			#print('a')
+			#print(a)
+
+
+
 		if self.path == "/Loc":
 			self.send_response(200)
 			self.send_header("Content-type", "text/html")
@@ -297,11 +304,10 @@ class MySQL():
 		print(req)
 		return self.c.execute(req).fetchall()
 
-	def select_animals(self):
-		req = "select name from Animal where owner=id_utilisateur;"
-		s = self.c.execute(req).fetchall()
-		print('s',s)
-		return s
+	#def select_animals(self):
+		#req = "select name from Animal where owner = 1;"
+		#s = self.c.execute(req).fetchall()
+		#return s
 
 	def temperature_html(self):
 		req = "select date_insert, temp from Temperature;"
