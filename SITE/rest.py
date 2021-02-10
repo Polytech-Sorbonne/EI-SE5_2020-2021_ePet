@@ -13,6 +13,7 @@ TOKEN = "BBFF-7AY67IDc1sw2hLeaILMxUMTdHHkdBr"
 DELAY = 5  # Delay in seconds
 
 id_utilisateur = -1
+id_animal = -1
 
 class MyHandler(http.server.BaseHTTPRequestHandler):
 	def __init__(self, *args, **kwargs):
@@ -20,6 +21,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 		super(MyHandler, self).__init__(*args, **kwargs)
 
 	def do_GET(self):
+		global id_animal
 		"""Respond to a GET request."""
 
 		if self.path == '/favicon.ico':
@@ -72,10 +74,21 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 
 
 
-		if self.path == "/Temp":
+		if self.path[0:5] == "/Temp":
 			self.send_response(200)
 			self.send_header("Content-type", "text/html")
 			self.end_headers()
+			print("ID_animal : ", id_animal)
+			
+			print("number5 : ", self.path[4])
+			print("number5 : ", self.path[4:])
+			try:
+				id_animal = int(self.path[6:]) + 1
+				print("ID_animal : ", id_animal)
+			
+			except:
+				pass
+			
 
 			with open('temperature_debut.html', 'r') as f:
 				my_str = f.read()
@@ -85,11 +98,8 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			print("S")
 			print(s)
 
-			print("S 0 1")
-			print(s[0][1])
-
 			for i in range(len(s)):
-
+				
 				my_str = my_str + "          ['"
 				my_str = my_str + str(s[i][0]) + "', " + str(s[i][1])
 				my_str = my_str + "],\n"
@@ -97,8 +107,18 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			my_str = my_str + "]);\n"
 
 
+			with open('temperature_suite.html', 'r') as f:
+				my_str = my_str + f.read()
+			
+			a = self.mysql.select_animals()
+			
+			for i in range(len(a)):
+				my_str = my_str + '<a href="/Temp/' + str(i) + '" <button>' + a[i][0] + ' </button></a>'
+				
+			
 			with open('temperature_fin.html', 'r') as f:
 				my_str = my_str + f.read()
+			
 			self.wfile.write(bytes(str(my_str)+'\n', 'UTF-8'))
 
 			tmp = open("affichage_temp_finale.html", "w")
@@ -188,6 +208,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 
 	def do_POST(self):
 		global id_utilisateur
+		global id_animal
 		# """Respond to a POST request."""
 		# res = urllib.parse.urlparse(self.path)
 		# query = urllib.parse.parse_qs(res.query)
@@ -339,7 +360,7 @@ class MySQL():
 		return s
 
 	def temperature_html(self):
-		req = "select date_insert, temp from Temperature;"
+		req = "select date_insert, temp from Temperature where animal = " + str(id_animal) + ";"
 		s = self.c.execute(req).fetchall()
 		return s
 
