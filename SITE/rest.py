@@ -143,6 +143,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 				my_str = f.read()
 
 			s = self.mysql.localisation_html()
+			print('LA LOCALISATION',s)
 
 
 
@@ -362,7 +363,7 @@ class MySQL():
 		return ss
 
 	def localisation_html(self):
-		req = "select * from Perimeter;"
+		req = "select * from Perimeter where id IN (select secuperim from Animal where owner =" + str(id_utilisateur) + ");"
 		s = self.c.execute(req).fetchall()
 		return s
 
