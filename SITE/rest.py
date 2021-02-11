@@ -78,13 +78,25 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			self.send_response(200)
 			self.send_header("Content-type", "text/html")
 			self.end_headers()
-			print("ID_animal : ", id_animal)
+			print("ID_animal1 : ", id_animal)
 
 			print("number5 : ", self.path[4])
 			print("number5 : ", self.path[4:])
 			try:
-				id_animal = int(self.path[6:]) + 1
-				print("ID_animal : ", id_animal)
+				print("On TRY")
+				offset = 0
+				users = self.mysql.select_user()
+				print('aaa')
+				for i in range(0,id_utilisateur-1):
+					print(i)
+					print('ca rentre ici')
+					print("users", users)
+					print("users[i]", users[i])
+					offset += users[i][3]
+					print('offset',offset)
+					print("NB_ANIMAUX: ", users[i][3])
+				id_animal = int(self.path[6:]) + 1 + offset
+				print("ID_animal2 : ", id_animal)
 
 			except:
 				pass
@@ -101,6 +113,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			for i in range(len(s)):
 
 				my_str = my_str + "          ['"
+				print("SI = ", s[i])
 				my_str = my_str + str(s[i][0]) + "', " + str(s[i][1])
 				my_str = my_str + "],\n"
 
@@ -284,7 +297,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 
 
 			res = urllib.parse.urlparse(self.path)
-			rep = self.mysql.select_user(res.path)
+			rep = self.mysql.select_user()
 
 
 			valide = False
@@ -357,7 +370,7 @@ class MySQL():
 			req = "select %s from %s where id=%s" %(elem[3],elem[1],elem[2])
 		return self.c.execute(req).fetchall()
 
-	def select_user(self,path):
+	def select_user(self):
 		req = "select * from User"
 		print(req)
 		return self.c.execute(req).fetchall()
@@ -367,10 +380,24 @@ class MySQL():
 		s = self.c.execute(req).fetchall()
 		return s
 
-	def temperature_html(self):		
-		req = "select date_insert, temp, animal from Temperature where animal IN (select id from Animal where owner = " + str(id_utilisateur) + ") and animal =" + str(id_animal) + ";"
-		s = self.c.execute(req).fetchall()	
-		return s
+	def temperature_html(self):
+		req = "select date_insert, temp, animal from Temperature where animal IN (select id from Animal where owner = " + str(id_utilisateur) + ");"
+		s = self.c.execute(req).fetchall()
+
+		print("tous_les_s", s)
+
+		ss = []
+
+		for e in s:
+			if e[2] == id_animal:
+				ss.append(e)
+		#s = s[id_animal]
+
+		print("ID_ANIMAL", id_animal)
+		print("nouveau_ss", ss)
+
+
+		return ss
 
 	def localisation_html(self):
 		req = "select * from Perimeter;"

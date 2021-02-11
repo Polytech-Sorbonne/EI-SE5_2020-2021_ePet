@@ -27,5 +27,14 @@ INSERT INTO Perimeter(y0,x0,y1,x1,y2,x2,y3,x3) VALUES (48.8566,2.3522,48.8852,2.
 INSERT INTO Perimeter(y0,x0,y1,x1,y2,x2,y3,x3) VALUES (2,3,1,1,2,4,3,2);
 --Insertion de données de température
 INSERT INTO Temperature(temp,date_insert,animal) VALUES (38.5,CURRENT_TIMESTAMP,1);
-INSERT INTO Temperature(temp,date_insert,animal) VALUES (38.5,CURRENT_TIMESTAMP,2);
+INSERT INTO Temperature(temp,date_insert,animal) VALUES (39.5,CURRENT_TIMESTAMP,1);
+INSERT INTO Temperature(temp,date_insert,animal) VALUES (38.9,CURRENT_TIMESTAMP,1);
+INSERT INTO Temperature(temp,date_insert,animal) VALUES (38.8,CURRENT_TIMESTAMP,1);
+INSERT INTO Temperature(temp,date_insert,animal) VALUES (39.3,CURRENT_TIMESTAMP,1);
+
+INSERT INTO Temperature(temp,date_insert,animal) VALUES (38.3,CURRENT_TIMESTAMP,2);
+INSERT INTO Temperature(temp,date_insert,animal) VALUES (39.5,CURRENT_TIMESTAMP,2);
+INSERT INTO Temperature(temp,date_insert,animal) VALUES (38.9,CURRENT_TIMESTAMP,2);
+INSERT INTO Temperature(temp,date_insert,animal) VALUES (38.3,CURRENT_TIMESTAMP,2);
+
 INSERT INTO Temperature(temp,date_insert,animal) VALUES (38.7,CURRENT_TIMESTAMP,3);
