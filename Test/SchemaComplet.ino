@@ -16,9 +16,9 @@
 Adafruit_MMA8451 mma = Adafruit_MMA8451();
 
 // Message SigFox
-byte data_Sigfox[12];
-byte data_Sigfox2[12];
-char data_string[12];
+byte bssid1_prec[6], bssid2_prec[6], bssid1[6], bssid2[6];
+byte rssi1, rssi2; 
+int temp1, temp2;
 String status = "";
 char output;
 
@@ -227,13 +227,9 @@ String getValue(String data, char separator, int index)
 
 int convStringToInt(char s){
   if(int(s) >= '0' && int(s) <= '9'){
-//    Serial.println("Conversion :");
-//    Serial.println(int(s) - '0');
     return int(s) - '0'; 
   }
   else if(int(s) >= 'A' && int(s) <= 'F'){
-//    Serial.println("Conversion :");
-//    Serial.println(int(s) - 55);
     return int(s) - 55 ;
   }
   return 0;
@@ -255,7 +251,7 @@ bool testMacAdresse(String id_add){
    return true; 
 }
 
-void detection_wifi(byte data_Sigfox[12], byte data_Sigfox2[12]){
+void detection_wifi(){
   
   Serial.println("scan start");
   String bssid;
@@ -270,10 +266,9 @@ void detection_wifi(byte data_Sigfox[12], byte data_Sigfox2[12]){
     Serial.println("no networks found");
   } else {
       
-    // Print BSSID and RSSI for each network found      
-    //construction du message Sigfox pour l'adresse mac la  + puissante
-    
-    //Code Sigfox frame (MAC (6B) + RSSI (2B))
+          
+   //Construction du message Sigfox pour l'adresse mac la  + puissante
+   //Code Sigfox frame (MAC (6B) + RSSI (1B))
     do{
       bssid = WiFi.BSSIDstr(nb_add);
       rssi = WiFi.RSSI(nb_add);
@@ -281,32 +276,33 @@ void detection_wifi(byte data_Sigfox[12], byte data_Sigfox2[12]){
         String xval = getValue(bssid, ':', j);
         byte v1 = convStringToInt(xval[0]) & 0xFF;
         byte v2 = convStringToInt(xval[1]) & 0xFF;
-        data_Sigfox[j] = (v1 << 4 ) + v2 ;
-        if (j<3){
-          id_add.concat(String(data_Sigfox[j],HEX));
+        bssid1[j] = (v1 << 4) + v2 ;
+        Serial.print("BSSID : ");
+        Serial.println(bssid1[j],HEX);
+        if (j < 3){
+          if(bssid1[j] < 16){
+            id_add.concat('0');
+          }
+          id_add.concat(String(bssid1[j],HEX));
         }
-        Serial.print("hex version : ");
-        Serial.println(data_Sigfox[j],HEX);
       }
       Serial.print("Id adresse MAC : ");
       Serial.println(id_add);
-      nb_add += 1;
+      
+      Serial.print("Classement du bssid : ");
+      Serial.println(nb_add);
+      
+      nb_add = nb_add + 1;
     }while(!testMacAdresse(id_add));
       
     Serial.print("RSSI:");
-    Serial.print(rssi);
-    Serial.println("");
-    Serial.println((rssi >>  0) & 0xFF,HEX);
-    Serial.println((rssi >>  8) & 0xFF,HEX);
-    Serial.print("string version of rssi : ");
-    Serial.println(String(rssi,HEX));
-            
-    data_Sigfox[6] =(rssi >>  0) & 0xFF;
-    Serial.println("");
+    Serial.println(rssi);
 
-    //construction du message Sigfox pour l'adresse mac la 2eme + puissante
-    //construction du message Sigfox pour l'adresse mac la  + puissante
-    
+    Serial.print("Valeur hexa du rssi : ");
+    rssi1 =(rssi >>  0) & 0xFF;
+    Serial.println(rssi1, HEX);
+
+    //Construction du message Sigfox pour l'adresse mac la 2eme + puissante 
     //Code Sigfox frame (MAC (6B) + RSSI (2B))
     do{
       bssid = WiFi.BSSIDstr(nb_add);
@@ -316,29 +312,30 @@ void detection_wifi(byte data_Sigfox[12], byte data_Sigfox2[12]){
         String xval = getValue(bssid, ':', j);
         byte v1 = convStringToInt(xval[0]) & 0xFF;
         byte v2 = convStringToInt(xval[1]) & 0xFF;
-        data_Sigfox2[j] = (v1 << 4 ) + v2 ;
-        if (j<3){
-          id_add.concat(String(data_Sigfox2[j],HEX));
+        bssid2[j] = (v1 << 4 ) + v2 ;
+        if (j < 3){
+          if(bssid2[j] < 16){
+            id_add.concat('0');
+          }
+          id_add.concat(String(bssid2[j],HEX));
         }
         Serial.print("hex version : ");
-        Serial.println(data_Sigfox2[j],HEX);
+        Serial.println(bssid2[j],HEX);
       }
       Serial.print("Id adresse MAC : ");
       Serial.println(id_add);
-      nb_add += 1;
+      
+      Serial.print("Classement du bssid : ");
+      Serial.println(nb_add);
+      
+      nb_add = nb_add + 1;
     }while(!testMacAdresse(id_add));
-     
     Serial.print("RSSI:");
-    Serial.print(rssi);
-    Serial.println("");
-    Serial.println((rssi >>  0) & 0xFF,HEX);
-    Serial.println((rssi >>  8) & 0xFF,HEX);
-    Serial.print("string version of rssi : ");
-    Serial.println(String(rssi,HEX));
-            
-    data_Sigfox2[6] =(rssi >>  0) & 0xFF;
-
-    Serial.println("");
+    Serial.println(rssi);
+    
+    Serial.print("Valeur hexa du rssi : ");
+    rssi2 =(rssi >>  0) & 0xFF;
+    Serial.println(rssi2, HEX);
   }
 }
 
@@ -390,46 +387,41 @@ int convFloatToInt(float x){
   return integer ;
 }
 
-// Tester avec sigfox
+// Récupération de 2 données de température 
 int temperature(){
-  sensors_event_t humidity, temp;
-  
-  shtc3.getEvent(&humidity, &temp);// populate temp and humidity objects with fresh data
+  sensors_event_t humidity,temp;
+  shtc3.getEvent(&humidity,&temp);// populate temp object with fresh data
   
   Serial.print("Temperature: "); Serial.print(temp.temperature); Serial.println(" degrees C");
-  //Serial.print("Humidity: "); Serial.print(humidity.relative_humidity); Serial.println("% rH");
   float tmp = temp.temperature;
-  int res = convFloatToInt(tmp);
-  delay(1000);
-  return res ;
+  temp1 = convFloatToInt(tmp);
+  int t = 0; //delay(450000); // => 7 min 30 s à voir 
+  while(t < 15){
+    shtc3.getEvent(&humidity,&temp);
+    tmp = temp.temperature;
+    temp2 = convFloatToInt(tmp);
+    if(abs(temp1 - temp2) > 1){
+      break;
+    }
+    delay(30000);
+    t = t + 1;
+  }
 }
 
+void send_message(char* msg){
+  //Envoie du message
+  Serial2.print(msg);
+  Serial.print("Envoi : ");
+  Serial.println(msg);
+  delay(1000);
 
-void send_message(byte data_Sigfox[12] , int temp){
-
-   char *c = (char*)malloc(12 * sizeof(byte));
-   snprintf(c, 12 * sizeof(byte), "AT$SF=%02x%02x\r\n",data_Sigfox[0],data_Sigfox[1]) ;
-
-//  String c = String("AT$SF=");
-//  for(int i = 0; i < 7; i++){
-//    if(data_Sigfox[i] < 16){
-//      c.concat(String('0'));  
-//    }
-//    c.concat(String(data_Sigfox[i], HEX));
-//  }
-//  if (temp < 4096) {
-//   c.concat(String('0')); 
-//  }
-//  c.concat(String(temp, HEX));
-  Serial2.print(c);
-  //Serial.println(sizeof(c));
-  Serial.println("Envoi");
-  Serial.println(c);
-  delay(1000);    
+  //Attente d'une réponse de sigfox
   while (!Serial2.available()){
     Serial.println("Waiting for response");
     delay(1000);
   }
+
+  //Réponse de sigfox
   while (Serial2.available()){
     output = (char)Serial2.read();
     status += output;
@@ -439,30 +431,143 @@ void send_message(byte data_Sigfox[12] , int temp){
   Serial.print("Status \t");
   Serial.println(status);
   delay(1000);
-  free(c);
-  Serial.println("");
+}
+
+//Converti le bssid en une chaîne de caractère
+void convByteToCharBssid(byte bssid[6], byte rssi, char *bssid_trad){
+  String trad = "";
+  for(int i = 0; i < 6; i++){
+    if (bssid[i] < 16){
+      trad.concat('0');
+    }
+    trad.concat(String(bssid[i],HEX));
+  }
+  if (rssi < 16){
+      trad.concat(String('0'));
+  }
+  trad.concat(String(rssi,HEX));
+  trad.toCharArray(bssid_trad, 15); 
+  Serial.println(bssid_trad);
+}
+
+void convByteToCharTemp(int temp, char *temp_trad){
+  String trad = "";
+  if (temp < 4096){
+      trad.concat('0');
+  }
+  trad.concat(String(temp,HEX));
+  trad.toCharArray(temp_trad, 5); 
+  Serial.println(temp_trad);
+  
+}
+
+void format_message(){
+  
+  char *mess1 = (char*)malloc(30 * sizeof(char));
+  char *mess2 = (char*)malloc(30 * sizeof(char));
+
+  //Initialisation des messages
+  snprintf(mess1, 30 * sizeof(char), "AT$SF=") ;
+  snprintf(mess2, 30 * sizeof(char), "AT$SF=") ;
+
+  //Si wifi sont les mêmes que dans le cas précédent -> envoie sinon rien
+  if (bssid1 != bssid1_prec and bssid2 != bssid2_prec){
+    char *bssid1_trad = (char *)malloc(15 * sizeof(char));
+    char *bssid2_trad = (char *)malloc(15 * sizeof(char));
+    
+    convByteToCharBssid(bssid1, rssi1, bssid1_trad);
+    convByteToCharBssid(bssid2, rssi2, bssid2_trad);
+    
+    strcat(mess1, bssid1_trad);
+    strcat(mess2, bssid2_trad);
+
+    // Si température anormal -> Envoie sinon rien 
+    if(temp1 < 3798 or temp1 > 3902 or temp2 < 3798 or temp2 > 3902){
+      char *temp1_trad = (char *)malloc(5 * sizeof(char));
+      char *temp2_trad = (char *)malloc(5 * sizeof(char));
+    
+      convByteToCharTemp(temp1, temp1_trad);
+      convByteToCharTemp(temp2, temp2_trad);
+
+      strcat(mess1, temp1_trad);
+      strcat(mess2, temp2_trad);
+
+      strcat(mess1, "03");
+      strcat(mess2, "03");
+
+      free(temp1_trad);
+      free(temp2_trad);
+    }
+    else{
+      strcat(mess1, "000000");
+      strcat(mess2, "000000");
+    }
+     
+    Serial.println(mess1); 
+    Serial.println(mess2);
+
+    free(bssid1_trad);
+    free(bssid2_trad);
+
+    for(int i = 0; i < 6; i++){
+      bssid1_prec[i] = bssid1[i];
+      bssid2_prec[i] = bssid2[i];
+    }
+  }
+  //Si l'animal effectue un mouvement
+  else if (1){//Ajouter les seuils 
+    if(temp1 < 3798 or temp1 > 3902 or temp2 < 3798 or temp2 > 3902){
+      // Dist X pour mess1
+      strcat(mess1, "000000000000000004");
+    
+      // Dist Y pour mess2
+      strcat(mess1, "000000000000000005");
+    }
+    else{
+    // Dist X pour mess1
+    strcat(mess1, "000000000000000001");
+    
+    // Dist Y pour mess2
+    strcat(mess1, "000000000000000002");
+    }
+  }
+  // Si la température est anormal
+  else if(temp1 < 3798 or temp1 > 3902 or temp2 < 3798 or temp2 > 3902){ 
+    
+    char *temp1_trad = (char *)malloc(5 * sizeof(char));
+    char *temp2_trad = (char *)malloc(5 * sizeof(char));
+    
+    convByteToCharTemp(temp1, temp1_trad);
+    convByteToCharTemp(temp2, temp2_trad);
+
+    strcat(mess1, temp1_trad);
+    strcat(mess1, temp2_trad);
+
+    strcat(mess1, "06");
+
+    free(temp1_trad);
+    free(temp2_trad);
+  }
+
+  send_message(mess1);
+  free(mess1);
+
+  if(!strcmp(mess2,"AT$SF=")){
+    send_message(mess2);
+  }
+  free(mess2);
+  
   // Wait a bit before scanning again
   delay(5000);  
 }
 
 void loop()
-{ 
-    int temp;
-     //1er message 
-    detection_wifi(data_Sigfox,data_Sigfox2);
-    accelerometre(mma, data_Sigfox);
-    temp = temperature();
-//    if temp < 3780 or temp > 3920{
-//      //Send Message
-//    }
-//    else if (){
-//      
-//    }
-    Serial.println("1er message");
-    send_message(data_Sigfox, temp);
-    //2eme message
-    accelerometre(mma, data_Sigfox2);
-    temp = temperature();
-    send_message(data_Sigfox2, temp);
-    
+{
+    detection_wifi();
+//    int temp;
+//    accelerometre(mma, data_Sigfox);
+//    temp = temperature();
+//    accelerometre(mma, data_Sigfox2);
+//    temp = temperature();
+    format_message();    
 }
