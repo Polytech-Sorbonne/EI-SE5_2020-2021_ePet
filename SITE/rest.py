@@ -367,9 +367,9 @@ class MySQL():
 		s = self.c.execute(req).fetchall()
 		return s
 
-	def temperature_html(self):
-		req = "select date_insert, temp from Temperature where animal = " + str(id_animal) + ";"
-		s = self.c.execute(req).fetchall()
+	def temperature_html(self):		
+		req = "select date_insert, temp, animal from Temperature where animal IN (select id from Animal where owner = " + str(id_utilisateur) + ") and animal =" + str(id_animal) + ";"
+		s = self.c.execute(req).fetchall()	
 		return s
 
 	def localisation_html(self):
