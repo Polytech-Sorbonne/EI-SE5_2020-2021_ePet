@@ -80,9 +80,9 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			self.end_headers()
 			try:
 				offset = 0
-				users = self.mysql.select_user()
+				users = self.mysql.select_user() #affichage de la table user
 				for i in range(0,id_utilisateur-1):
-					offset += users[i][3]
+					offset += users[i][3] #affichage du nombre d'animaux des utilisateurs précédents(3 ème argument)
 				id_animal = int(self.path[6:]) + 1 + offset
 
 			except:
@@ -101,7 +101,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 
 				my_str = my_str + "          ['"
 				print("SI = ", s[i])
-				my_str = my_str + str(s[i][0]) + "', " + str(s[i][1])
+				my_str = my_str + str(s[i][0]) + "', " + str(s[i][1]) #date d'insertion et température
 				my_str = my_str + "],\n"
 
 			my_str = my_str + "]);\n"
@@ -114,6 +114,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 
 			for i in range(len(a)):
 				my_str = my_str + '<a href="/Temp/' + str(i) + '" <button>' + a[i][0] + ' </button></a>'
+				#affichage noms des animaux
 
 
 			with open('temperature_fin.html', 'r') as f:
@@ -132,32 +133,6 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			a = self.mysql.select_animals()
 			print('a')
 			print(a)
-
-			for i in range(len(a)):
-				for j in range(len(a[i])):
-					a1 = a[i][j]
-					print('a1',a1)
-					a2 = a[i][j]
-					print('a2',a2)
-
-			#if self.path == "/select_animal":
-				#self.send_response(200)
-				#self.send_header("Content-type", "text/html")
-				#self.end_headers()
-
-				#a = self.mysql.select_animals()
-				#print('a')
-				#print(a)
-
-				#for i in range(len(a)):
-					#for j in range(len(a[i])):
-						#a1 = a[i][j]
-						#print('a1',a1)
-						#a2 = a[i][j]
-						#print('a2',a2)
-
-
-
 
 		if self.path == "/Loc":
 			self.send_response(200)
