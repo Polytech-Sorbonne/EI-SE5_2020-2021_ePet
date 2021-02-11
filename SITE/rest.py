@@ -113,7 +113,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			a = self.mysql.select_animals()
 
 			for i in range(len(a)):
-				my_str = my_str + '<a href="/Temp/' + str(i) + '" <button>' + a[i][0] + ' </button></a>'
+				my_str = my_str + '<a href="/Temp-' + str(i) + '" <button>' + a[i][0] + ' </button></a>'
 				#affichage noms des animaux
 
 
@@ -183,7 +183,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			a = self.mysql.select_animals()
 
 			for i in range(len(a)):
-				my_str = my_str + '<a href="/Temp/' + str(i) + '" <button>' + a[i][0] + ' </button></a>'
+				my_str = my_str + '<a href="/Loc-' + str(i) + '" <button>' + a[i][0] + ' </button></a>'
 				#affichage noms des animaux
 
 
