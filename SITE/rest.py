@@ -79,16 +79,16 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			self.send_header("Content-type", "text/html")
 			self.end_headers()
 			print("ID_animal : ", id_animal)
-			
+
 			print("number5 : ", self.path[4])
 			print("number5 : ", self.path[4:])
 			try:
 				id_animal = int(self.path[6:]) + 1
 				print("ID_animal : ", id_animal)
-			
+
 			except:
 				pass
-			
+
 
 			with open('temperature_debut.html', 'r') as f:
 				my_str = f.read()
@@ -99,7 +99,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			print(s)
 
 			for i in range(len(s)):
-				
+
 				my_str = my_str + "          ['"
 				my_str = my_str + str(s[i][0]) + "', " + str(s[i][1])
 				my_str = my_str + "],\n"
@@ -109,16 +109,16 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 
 			with open('temperature_suite.html', 'r') as f:
 				my_str = my_str + f.read()
-			
+
 			a = self.mysql.select_animals()
-			
+
 			for i in range(len(a)):
 				my_str = my_str + '<a href="/Temp/' + str(i) + '" <button>' + a[i][0] + ' </button></a>'
-				
-			
+
+
 			with open('temperature_fin.html', 'r') as f:
 				my_str = my_str + f.read()
-			
+
 			self.wfile.write(bytes(str(my_str)+'\n', 'UTF-8'))
 
 			tmp = open("affichage_temp_finale.html", "w")
@@ -190,8 +190,16 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 
 			long = str(x0)
 			lat = str(y0)
+			api = open("key.txt", "r")
+			lignes = api.read()
+			print('lignes',lignes)
+			lignes = lignes.rstrip('\n')
 
-			my_str += lat + "," + long + "], 11);\nL.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {\n\tmaxZoom: 18,\n\tattribution: 'Map data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, ' + 'Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>',\n\tid: 'mapbox/streets-v11',\n\ttileSize: 512,\n\tzoomOffset: -1\n}).addTo(mymap);\nL.marker([" + lat + "," + long + "]).addTo(mymap)\nL.polygon([[" + str(y1) + "," + str(x1) + "],[" + str(y2) + "," + str(x2) + "],[" + str(y3) + "," + str(x3) + "]]).addTo(mymap);"
+
+			print("classe = ", type(lignes).__name__)
+
+
+			my_str += lat + "," + long + "], 11);\nL.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=" +str(lignes)+"', {\n\tmaxZoom: 18,\n\tattribution: 'Map data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, ' + 'Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>',\n\tid: 'mapbox/streets-v11',\n\ttileSize: 512,\n\tzoomOffset: -1\n}).addTo(mymap);\nL.marker([" + lat + "," + long + "]).addTo(mymap)\nL.polygon([[" + str(y1) + "," + str(x1) + "],[" + str(y2) + "," + str(x2) + "],[" + str(y3) + "," + str(x3) + "]]).addTo(mymap);"
 
 
 			with open('localisation_fin.html', 'r') as f:
