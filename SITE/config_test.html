@@ -115,54 +115,8 @@
   </style>
 
 </head>
-
-<body>
-
-  <div class="topnav" id="myTopnav">
-    <a href="#accueil" <button onclick="charger_accueil()">Accueil</button></a>
-    <a href="#localisation" class="active" <button onclick="charger_localisation()">Localisation</button></a>
-    <a href="#temperature" <button onclick="charger_temperature()">Température</button></a>
-    <a href="#github" <button onclick="charger_github()">Github</button></a>
-  </div>
-
-  <div class="custom-image">
-    <div class="custom-text">
-      <h1>Localisation</h1>
-      <p>Suivez le parcours de votre animal</p>
-    </div>
-  </div>
-
-  <div class="container">
-    <br>
-    <br>
-    <br>
-    <h3>Localisation de l'animal</h3>
-    <br>
-    <div id="mapid" style="width: 100%; height: 400px;"></div>
-    <div>
-    <p></p>
-    </div>
-  </div>
-
-  <script>
-
-    function charger_accueil() {
-          location.replace("./Accueil")
-    }
-    function charger_localisation() {
-          location.replace("./Loc")
-    }
-    function charger_temperature() {
-          location.replace("./Temp")
-    }
-    function charger_github() {
-      var win = window.open("https://github.com/Polytech-Sorbonne/EI-SE5_2020-2021_ePet", '_blank');
-      win.focus();
-    }
-
-  </script>
-  <script>
-  	var mymap = L.map('mapid').setView([
+<script>
+  var mymap = L.map('mapid').setView([
 48.8566,2.3522], 11);
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
 	maxZoom: 18,
@@ -173,6 +127,69 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 }).addTo(mymap);
 L.marker([48.8566,2.3522]).addTo(mymap)
 L.polygon([[48.8852,2.3856],[48.8354,2.4055],[48.9056,2.4044]]).addTo(mymap);
+        var options = {
+          title: 'Titre',
+          hAxis: {title: 'Date heure',  titleTextStyle: {color: '#333'}},
+          vAxis: {minValue: 0}
+        };
+
+        var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+      }
+
+    </script>
+</head>
+<body>
+
+<div class="topnav" id="myTopnav">
+  <a href="#accueil" <button onclick="charger_accueil()">Accueil</button></a>
+  <a href="#localisation" class="active" <button onclick="charger_localisation()">Localisation</button></a>
+  <a href="#temperature" <button onclick="charger_temperature()">Température</button></a>
+  <a href="#github" <button onclick="charger_github()">Github</button></a>
+</div>
+
+<div class="custom-image">
+  <div class="custom-text">
+    <h1>Localisation</h1>
+    <p>Suivez le parcours de votre animal</p>
+  </div>
+</div>
+
+<div class="container">
+  <br>
+  <br>
+  <br>
+  <h3>Localisation de l'animal</h3>
+  <br>
+  <div id="mapid" style="width: 100%; height: 400px;"></div>
+  <div>
+  <p></p>
+  </div>
+  <!-- The filterable elements. Note that some have multiple class names (this can be used if they belong to multiple categories) -->
+  <div id="myBtnContainer">
+    <button class="btn active" onclick="filterSelection('Animals')"> animals</button>
+  </div>
+</div>
+
+<script>
+
+  function charger_accueil() {
+        location.replace("./Accueil")
+  }
+  function charger_localisation() {
+        location.replace("./Loc")
+  }
+  function charger_temperature() {
+        location.replace("./Temp")
+  }
+  function charger_github() {
+    var win = window.open("https://github.com/Polytech-Sorbonne/EI-SE5_2020-2021_ePet", '_blank');
+    win.focus();
+  }
+
+</script>
+<a href="/Temp/0" <button>tokyo </button></a><a href="/Temp/1" <button>chanel </button></a>
 
 
   	var popup = L.popup();

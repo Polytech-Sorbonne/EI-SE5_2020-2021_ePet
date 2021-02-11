@@ -372,11 +372,8 @@ class MySQL():
 		return ss
 
 	def localisation_html(self):
-<<<<<<< HEAD
+
 		req = "select * from Perimeter where id IN (select secuperim from Animal where owner ="+ str(id_utilisateur)+");"
-=======
-		req = "select * from Perimeter where id IN (select secuperim from Animal where owner =" + str(id_utilisateur) + ");"
->>>>>>> d9e56071cfe2972a7a7e4137003b2761bc53211e
 		s = self.c.execute(req).fetchall()
 		return s
 
