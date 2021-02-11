@@ -78,25 +78,12 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			self.send_response(200)
 			self.send_header("Content-type", "text/html")
 			self.end_headers()
-			print("ID_animal1 : ", id_animal)
-
-			print("number5 : ", self.path[4])
-			print("number5 : ", self.path[4:])
 			try:
-				print("On TRY")
 				offset = 0
 				users = self.mysql.select_user()
-				print('aaa')
 				for i in range(0,id_utilisateur-1):
-					print(i)
-					print('ca rentre ici')
-					print("users", users)
-					print("users[i]", users[i])
 					offset += users[i][3]
-					print('offset',offset)
-					print("NB_ANIMAUX: ", users[i][3])
 				id_animal = int(self.path[6:]) + 1 + offset
-				print("ID_animal2 : ", id_animal)
 
 			except:
 				pass
