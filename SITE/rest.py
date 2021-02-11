@@ -176,6 +176,15 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 
 			my_str += lat + "," + long + "], 11);\nL.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=" +str(lignes)+"', {\n\tmaxZoom: 18,\n\tattribution: 'Map data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, ' + 'Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>',\n\tid: 'mapbox/streets-v11',\n\ttileSize: 512,\n\tzoomOffset: -1\n}).addTo(mymap);\nL.marker([" + lat + "," + long + "]).addTo(mymap)\nL.polygon([[" + str(y1) + "," + str(x1) + "],[" + str(y2) + "," + str(x2) + "],[" + str(y3) + "," + str(x3) + "]]).addTo(mymap);"
 
+			with open('localisation_suite.html', 'r') as f:
+				my_str = my_str + f.read()
+
+			a = self.mysql.select_animals()
+
+			for i in range(len(a)):
+				my_str = my_str + '<a href="/Temp/' + str(i) + '" <button>' + a[i][0] + ' </button></a>'
+				#affichage noms des animaux
+
 
 			with open('localisation_fin.html', 'r') as f:
 				my_str += f.read()
@@ -362,7 +371,7 @@ class MySQL():
 		return ss
 
 	def localisation_html(self):
-		req = "select * from Perimeter;"
+		req = "select * from Perimeter where id IN (select secuperim from Animal where owner ="+ str(id_utilisateur)+");"
 		s = self.c.execute(req).fetchall()
 		return s
 
