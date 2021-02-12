@@ -19,6 +19,7 @@ Adafruit_MMA8451 mma = Adafruit_MMA8451();
 byte bssid1_prec[6], bssid2_prec[6], bssid1[6], bssid2[6];
 byte rssi1, rssi2; 
 int temp1, temp2;
+int Xseuil, Yseuil, x, y;
 String status = "";
 char output;
 
@@ -164,9 +165,6 @@ char *mac[] = {
   "103F44","8CDEF9","9CBCF0","68ABBC","509839","741575","1CCCD6","582059","B4C4FC","7CD661","E446DA","8C5AF8","D8CE3A","E4DB6D","D86375","18F0E4","F4F5DB","ECD09F","34CE00","C40BCB",
   "64B473","7451BA","7802F8","ACF7F3","D4970B","8CBEBE","14F65A","009EC8","0C1DAF","3480B3","F48B32","E0CCF8","98F621","7C2ADB","941700","64A200","503DC6","8CD9D6"};
 
-
-
-
 Adafruit_SHTC3 shtc3 = Adafruit_SHTC3();
 #define I2C_SDA 21
 #define I2C_SCL 22
@@ -209,6 +207,7 @@ void setup()
   Serial.println("Found SHTC3 sensor");
 }
 
+//Permet d'obtenir l'adresse MAC d'un WIFI en string 
 String getValue(String data, char separator, int index)
 {
     int found = 0;
@@ -225,6 +224,7 @@ String getValue(String data, char separator, int index)
     return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
+//Conversion d'un string en int
 int convStringToInt(char s){
   if(int(s) >= '0' && int(s) <= '9'){
     return int(s) - '0'; 
@@ -235,6 +235,7 @@ int convStringToInt(char s){
   return 0;
 }
 
+// Compare une adresse MAC détectée avec celles présentes dans le tableau mac
 bool testMacAdresse(String id_add){
   String id_const;
   for(int i = 0; i < sizeof(mac) / sizeof(mac[0]); i++){ 
@@ -251,6 +252,7 @@ bool testMacAdresse(String id_add){
    return true; 
 }
 
+// Détecte les WIFI au alentour
 void detection_wifi(){
   
   Serial.println("scan start");
@@ -339,6 +341,7 @@ void detection_wifi(){
   }
 }
 
+//Converti un float en hexa
 byte convFloatToHex(float x){
   int integer = x * 10;
   Serial.print("Integer : ");
@@ -349,7 +352,8 @@ byte convFloatToHex(float x){
   return res ;
 }
 
-void accelerometre(Adafruit_MMA8451 mma, byte data_Sigfox[12]){
+//Permet de definir le mouvement          PEUT ETRE A REVOIR
+void accelerometre(Adafruit_MMA8451 mma){
  
   /* Get a new sensor event */ 
   sensors_event_t event; 
@@ -380,6 +384,7 @@ void accelerometre(Adafruit_MMA8451 mma, byte data_Sigfox[12]){
 //  Serial.println(data_Sigfox[9], HEX);
 }
 
+//Conversion d'un float en int
 int convFloatToInt(float x){
   int integer = x * 100;
   Serial.print("Integer : ");
@@ -387,7 +392,7 @@ int convFloatToInt(float x){
   return integer ;
 }
 
-// Récupération de 2 données de température 
+// Récupération de 2 données de température          PEUT ETRE A REVOIR
 int temperature(){
   sensors_event_t humidity,temp;
   shtc3.getEvent(&humidity,&temp);// populate temp object with fresh data
@@ -408,6 +413,7 @@ int temperature(){
   }
 }
 
+//Envoie des messages
 void send_message(char* msg){
   //Envoie du message
   Serial2.print(msg);
@@ -450,6 +456,7 @@ void convByteToCharBssid(byte bssid[6], byte rssi, char *bssid_trad){
   Serial.println(bssid_trad);
 }
 
+//Converti température en une chaîne de caractère
 void convByteToCharTemp(int temp, char *temp_trad){
   String trad = "";
   if (temp < 4096){
@@ -461,101 +468,162 @@ void convByteToCharTemp(int temp, char *temp_trad){
   
 }
 
+//Converti position en une chaîne de caractère
+//void convByteToCharAcc(int x, char *x_trad){
+//  
+//}
+
+// Détermination des cas
+int testCas(){
+  if(temp1 < 3798 or temp1 > 3902 or temp2 < 3798 or temp2 > 3902){
+    if(Xseuil < x or Yseuil < y){
+      if(bssid1 != bssid1_prec and bssid2 != bssid2_prec)
+        return 5;
+      return 3;
+    }
+    return 1;
+  }
+  else{
+    if(Xseuil < x or Yseuil < y){
+      if(bssid1 != bssid1_prec and bssid2 != bssid2_prec)
+        return 4;
+      return 2;
+    }
+    return 0;
+  }
+}
+
+//Formation des messages          A TESTER
 void format_message(){
   
   char *mess1 = (char*)malloc(30 * sizeof(char));
   char *mess2 = (char*)malloc(30 * sizeof(char));
+  char *bssid1_trad = (char *)malloc(15 * sizeof(char));
+  char *bssid2_trad = (char *)malloc(15 * sizeof(char));
+  char *temp1_trad = (char *)malloc(5 * sizeof(char));
+  char *temp2_trad = (char *)malloc(5 * sizeof(char));
+  char *x_trad = (char *)malloc(5 * sizeof(char));
+  char *y_trad = (char *)malloc(5 * sizeof(char));
 
   //Initialisation des messages
   snprintf(mess1, 30 * sizeof(char), "AT$SF=") ;
   snprintf(mess2, 30 * sizeof(char), "AT$SF=") ;
 
-  //Si wifi sont les mêmes que dans le cas précédent -> envoie sinon rien
-  if (bssid1 != bssid1_prec and bssid2 != bssid2_prec){
-    char *bssid1_trad = (char *)malloc(15 * sizeof(char));
-    char *bssid2_trad = (char *)malloc(15 * sizeof(char));
+  // Détermination des cas
+  int cas = testCas();
+  
+  switch(cas){
     
-    convByteToCharBssid(bssid1, rssi1, bssid1_trad);
-    convByteToCharBssid(bssid2, rssi2, bssid2_trad);
-    
-    strcat(mess1, bssid1_trad);
-    strcat(mess2, bssid2_trad);
+    case 0: // Température normal & aucun mouvement
+      break;
+      
+    case 1: // Température anormal & aucun mouvement
+      convByteToCharTemp(temp1, temp1_trad);
+      strcat(mess1, temp1_trad);
+      strcat(mess1, "06");      
+      break;
+      
+//    case 2: // Température normal & mouvement présent & pas chgmt localisation
+//
+//      convByteToCharAcc(x, x_trad);
+//      convByteToCharAcc(y, y_trad);
+//       
+//      strcat(mess1, x_trad);
+//      strcat(mess2, y_trad);
+//
+//      strcat(mess1, "00000000000000");
+//      strcat(mess2, "00000000000000");
+//
+//      strcat(mess1, "01");
+//      strcat(mess2, "02");    
+//      break;
+//      
+//    case 3: // Température anormal & mouvement présent & pas chgmt localisation
+//
+//      convByteToCharAcc(x, x_trad);
+//      convByteToCharAcc(y, y_trad);
+//       
+//      strcat(mess1, x_trad);
+//      strcat(mess2, y_trad);
+//
+//      strcat(mess1, "0000000000");
+//      strcat(mess2, "0000000000");
+//  
+//      convByteToCharTemp(temp1, temp1_trad);
+//      convByteToCharTemp(temp2, temp2_trad);
+//             
+//      strcat(mess1, temp1_trad);
+//      strcat(mess2, temp2_trad);
+//
+//      strcat(mess1, "04");
+//      strcat(mess2, "05");
+//      break;
+      
+    case 4: // Température normal & mouvement présent & chgmt localisation
+      
+      convByteToCharBssid(bssid1, rssi1, bssid1_trad);
+      convByteToCharBssid(bssid2, rssi2, bssid2_trad); 
+      
+      strcat(mess1, bssid1_trad);
+      strcat(mess2, bssid2_trad);
 
-    // Si température anormal -> Envoie sinon rien 
-    if(temp1 < 3798 or temp1 > 3902 or temp2 < 3798 or temp2 > 3902){
-      char *temp1_trad = (char *)malloc(5 * sizeof(char));
-      char *temp2_trad = (char *)malloc(5 * sizeof(char));
-    
+      strcat(mess1, "00");
+      strcat(mess2, "00");
+
+      for(int i = 0; i < 6; i++){
+        bssid1_prec[i] = bssid1[i];
+        bssid2_prec[i] = bssid2[i];
+      }
+      break;
+       
+    case 5: // Température anormal & mouvement présent & chgmt localisation
+
+      convByteToCharBssid(bssid1, rssi1, bssid1_trad);
+      convByteToCharBssid(bssid2, rssi2, bssid2_trad); 
+
+      strcat(mess1, bssid1_trad);
+      strcat(mess2, bssid2_trad);
+   
       convByteToCharTemp(temp1, temp1_trad);
       convByteToCharTemp(temp2, temp2_trad);
-
+       
       strcat(mess1, temp1_trad);
       strcat(mess2, temp2_trad);
 
       strcat(mess1, "03");
       strcat(mess2, "03");
-
-      free(temp1_trad);
-      free(temp2_trad);
-    }
-    else{
-      strcat(mess1, "000000");
-      strcat(mess2, "000000");
-    }
-     
-    Serial.println(mess1); 
-    Serial.println(mess2);
-
-    free(bssid1_trad);
-    free(bssid2_trad);
-
-    for(int i = 0; i < 6; i++){
-      bssid1_prec[i] = bssid1[i];
-      bssid2_prec[i] = bssid2[i];
-    }
-  }
-  //Si l'animal effectue un mouvement
-  else if (1){//Ajouter les seuils 
-    if(temp1 < 3798 or temp1 > 3902 or temp2 < 3798 or temp2 > 3902){
-      // Dist X pour mess1
-      strcat(mess1, "000000000000000004");
-    
-      // Dist Y pour mess2
-      strcat(mess1, "000000000000000005");
-    }
-    else{
-    // Dist X pour mess1
-    strcat(mess1, "000000000000000001");
-    
-    // Dist Y pour mess2
-    strcat(mess1, "000000000000000002");
-    }
-  }
-  // Si la température est anormal
-  else if(temp1 < 3798 or temp1 > 3902 or temp2 < 3798 or temp2 > 3902){ 
-    
-    char *temp1_trad = (char *)malloc(5 * sizeof(char));
-    char *temp2_trad = (char *)malloc(5 * sizeof(char));
-    
-    convByteToCharTemp(temp1, temp1_trad);
-    convByteToCharTemp(temp2, temp2_trad);
-
-    strcat(mess1, temp1_trad);
-    strcat(mess1, temp2_trad);
-
-    strcat(mess1, "06");
-
-    free(temp1_trad);
-    free(temp2_trad);
+      
+      for(int i = 0; i < 6; i++){
+        bssid1_prec[i] = bssid1[i];
+        bssid2_prec[i] = bssid2[i];
+      }
+      break;
+       
+    default:
+       break;
   }
 
-  send_message(mess1);
+  Serial.println(mess1); 
+  Serial.println(mess2);
+
+  //Envoie des messages selon le cas
+  if(cas == 1)
+    send_message(mess1);   
+  else if(cas > 1 and cas < 6){
+    send_message(mess1); 
+    send_message(mess2); 
+  }
+
+  //Libération mémoire
   free(mess1);
-
-  if(!strcmp(mess2,"AT$SF=")){
-    send_message(mess2);
-  }
   free(mess2);
+  free(bssid1_trad);
+  free(bssid2_trad);
+  free(temp1_trad);
+  free(temp2_trad);
+  free(x_trad);
+  free(y_trad);
+
   
   // Wait a bit before scanning again
   delay(5000);  
@@ -564,10 +632,7 @@ void format_message(){
 void loop()
 {
     detection_wifi();
-//    int temp;
-//    accelerometre(mma, data_Sigfox);
-//    temp = temperature();
-//    accelerometre(mma, data_Sigfox2);
-//    temp = temperature();
+//    accelerometre(mma);
+//    temperature();
     format_message();    
 }
