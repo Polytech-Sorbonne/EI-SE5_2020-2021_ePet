@@ -134,34 +134,37 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			print('a')
 			print(a)
 
-		if self.path == "/Loc":
+		if self.path[0:4] == "/Loc":
 			self.send_response(200)
 			self.send_header("Content-type", "text/html")
 			self.end_headers()
+
+			try:
+				offset = 0
+				users = self.mysql.select_user() #affichage de la table user
+				for i in range(0,id_utilisateur-1):
+					offset += users[i][3] #affichage du nombre d'animaux des utilisateurs précédents(3 ème argument)
+				id_animal = int(self.path[5:]) + 1
+
+			except:
+				pass
 
 			with open('localisation_debut.html', 'r') as f:
 				my_str = f.read()
 
 			s = self.mysql.localisation_html()
-			print('LA LOCALISATION',s)
 
+			y0 = s[1]
+			x0 = s[2]
 
+			y1 = s[3]
+			x1 = s[4]
 
+			y2 = s[5]
+			x2 = s[6]
 
-
-			#for i in range(len(s)):
-
-			y0 = s[0][1]
-			x0 = s[0][2]
-
-			y1 = s[0][3]
-			x1 = s[0][4]
-
-			y2 = s[0][5]
-			x2 = s[0][6]
-
-			y3 = s[0][7]
-			x3 = s[0][8]
+			y3 = s[7]
+			x3 = s[8]
 
 
 			long = str(x0)
@@ -175,16 +178,19 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			print("classe = ", type(lignes).__name__)
 
 
-			my_str += lat + "," + long + "], 11);\nL.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=" +str(lignes)+"', {\n\tmaxZoom: 18,\n\tattribution: 'Map data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, ' + 'Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>',\n\tid: 'mapbox/streets-v11',\n\ttileSize: 512,\n\tzoomOffset: -1\n}).addTo(mymap);\nL.marker([" + lat + "," + long + "]).addTo(mymap)\nL.polygon([[" + str(y1) + "," + str(x1) + "],[" + str(y2) + "," + str(x2) + "],[" + str(y3) + "," + str(x3) + "]]).addTo(mymap);"
 
 			with open('localisation_suite.html', 'r') as f:
 				my_str = my_str + f.read()
 
 			a = self.mysql.select_animals()
-
 			for i in range(len(a)):
 				my_str = my_str + '<a href="/Loc-' + str(i) + '" <button>' + a[i][0] + ' </button></a>'
 				#affichage noms des animaux
+
+			with open('localisation_suite_2.html', 'r') as f:
+				my_str = my_str + f.read()
+
+			my_str += lat + "," + long + "], 11);\nL.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=" +str(lignes)+"', {\n\tmaxZoom: 18,\n\tattribution: 'Map data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, ' + 'Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>',\n\tid: 'mapbox/streets-v11',\n\ttileSize: 512,\n\tzoomOffset: -1\n}).addTo(mymap);\nL.marker([" + lat + "," + long + "]).addTo(mymap)\nL.polygon([[" + str(y1) + "," + str(x1) + "],[" + str(y2) + "," + str(x2) + "],[" + str(y3) + "," + str(x3) + "]]).addTo(mymap);"
 
 
 			with open('localisation_fin.html', 'r') as f:
@@ -316,10 +322,6 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 
 
 
-
-
-
-
 class MySQL():
 	def __init__(self, name):
 		self.c = None
@@ -372,9 +374,13 @@ class MySQL():
 		return ss
 
 	def localisation_html(self):
-
-		req = "select * from Perimeter where id IN (select secuperim from Animal where owner ="+ str(id_utilisateur)+");"
+		req1 = "select secuperim from Animal where owner = " + str(id_utilisateur) + ";"
+		num_p = self.c.execute(req1).fetchall()[0][0]
+		print("num_p:", num_p)
+		req = "select * from Perimeter;"
 		s = self.c.execute(req).fetchall()
+		s = s[num_p-1]
+		print("S:",s)
 		return s
 
 	def insert(self,path,query):

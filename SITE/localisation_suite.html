@@ -1,15 +1,4 @@
 
-        var options = {
-          title: 'Titre',
-          hAxis: {title: 'Date heure',  titleTextStyle: {color: '#333'}},
-          vAxis: {minValue: 0}
-        };
-
-        var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
-
-        chart.draw(data, options);
-      }
-
     </script>
 </head>
 <body>
@@ -34,30 +23,8 @@
   <br>
   <h3>Localisation de l'animal</h3>
   <br>
-  <div id="mapid" style="width: 100%; height: 400px;"></div>
-  <div>
-  <p></p>
-  </div>
   <!-- The filterable elements. Note that some have multiple class names (this can be used if they belong to multiple categories) -->
   <div id="myBtnContainer">
     <button class="btn active" onclick="filterSelection('Animals')"> animals</button>
   </div>
-</div>
-
-<script>
-
-  function charger_accueil() {
-        location.replace("./Accueil")
-  }
-  function charger_localisation() {
-        location.replace("./Loc")
-  }
-  function charger_temperature() {
-        location.replace("./Temp")
-  }
-  function charger_github() {
-    var win = window.open("https://github.com/Polytech-Sorbonne/EI-SE5_2020-2021_ePet", '_blank');
-    win.focus();
-  }
-
-</script>
+  <br>

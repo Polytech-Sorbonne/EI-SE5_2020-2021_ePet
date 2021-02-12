@@ -115,28 +115,6 @@
   </style>
 
 </head>
-<script>
-  var mymap = L.map('mapid').setView([
-48.8566,2.3522], 11);
-L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-	maxZoom: 18,
-	attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' + 'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-	id: 'mapbox/streets-v11',
-	tileSize: 512,
-	zoomOffset: -1
-}).addTo(mymap);
-L.marker([48.8566,2.3522]).addTo(mymap)
-L.polygon([[48.8852,2.3856],[48.8354,2.4055],[48.9056,2.4044]]).addTo(mymap);
-        var options = {
-          title: 'Titre',
-          hAxis: {title: 'Date heure',  titleTextStyle: {color: '#333'}},
-          vAxis: {minValue: 0}
-        };
-
-        var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
-
-        chart.draw(data, options);
-      }
 
     </script>
 </head>
@@ -162,14 +140,16 @@ L.polygon([[48.8852,2.3856],[48.8354,2.4055],[48.9056,2.4044]]).addTo(mymap);
   <br>
   <h3>Localisation de l'animal</h3>
   <br>
-  <div id="mapid" style="width: 100%; height: 400px;"></div>
-  <div>
-  <p></p>
-  </div>
   <!-- The filterable elements. Note that some have multiple class names (this can be used if they belong to multiple categories) -->
   <div id="myBtnContainer">
     <button class="btn active" onclick="filterSelection('Animals')"> animals</button>
   </div>
+  <br>
+<a href="/Loc-0" <button>tokyo </button></a><a href="/Loc-1" <button>chanel </button></a>
+<div id="mapid" style="width: 100%; height: 400px;"></div>
+<div>
+<p></p>
+</div>
 </div>
 
 <script>
@@ -189,7 +169,19 @@ L.polygon([[48.8852,2.3856],[48.8354,2.4055],[48.9056,2.4044]]).addTo(mymap);
   }
 
 </script>
-<a href="/Loc-0" <button>tokyo </button></a><a href="/Loc-1" <button>chanel </button></a>
+
+<script>
+  var mymap = L.map('mapid').setView([
+48.8566,2.3522], 11);
+L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+	maxZoom: 18,
+	attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' + 'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+	id: 'mapbox/streets-v11',
+	tileSize: 512,
+	zoomOffset: -1
+}).addTo(mymap);
+L.marker([48.8566,2.3522]).addTo(mymap)
+L.polygon([[48.8852,2.3856],[48.8354,2.4055],[48.9056,2.4044]]).addTo(mymap);
 
 
   	var popup = L.popup();
