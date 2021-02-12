@@ -79,14 +79,10 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			self.send_header("Content-type", "text/html")
 			self.end_headers()
 			try:
-				offset = 0
-				users = self.mysql.select_user() #affichage de la table user
-				for i in range(0,id_utilisateur-1):
-					offset += users[i][3] #affichage du nombre d'animaux des utilisateurs précédents(3 ème argument)
-				id_animal = int(self.path[6:]) + 1 + offset
+				id_animal = int(self.path[6:]) + 1
 
 			except:
-				pass
+				id_animal = 1
 
 
 			with open('temperature_debut.html', 'r') as f:
@@ -140,31 +136,31 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			self.end_headers()
 
 			try:
-				offset = 0
-				users = self.mysql.select_user() #affichage de la table user
-				for i in range(0,id_utilisateur-1):
-					offset += users[i][3] #affichage du nombre d'animaux des utilisateurs précédents(3 ème argument)
 				id_animal = int(self.path[5:]) + 1
 
 			except:
-				pass
+				id_animal = 1
 
 			with open('localisation_debut.html', 'r') as f:
 				my_str = f.read()
 
 			s = self.mysql.localisation_html()
 
-			y0 = s[1]
-			x0 = s[2]
+			loc = self.mysql.select_loc()
 
-			y1 = s[3]
-			x1 = s[4]
+			print("LOC:",loc)
 
-			y2 = s[5]
-			x2 = s[6]
+			y0 = loc[0]
+			x0 = loc[1]
 
-			y3 = s[7]
-			x3 = s[8]
+			y1 = s[1]
+			x1 = s[2]
+
+			y2 = s[3]
+			x2 = s[4]
+
+			y3 = s[5]
+			x3 = s[6]
 
 
 			long = str(x0)
@@ -354,8 +350,15 @@ class MySQL():
 		s = self.c.execute(req).fetchall()
 		return s
 
+	def select_loc(self):
+		req = "select y0,x0 from Animal where owner = +" + str(id_utilisateur) + ";"
+		s = self.c.execute(req).fetchall()
+		print("S:",s)
+		s = s[id_animal-1]
+		return s
+
 	def temperature_html(self):
-		req = "select date_insert, temp, animal from Temperature where animal IN (select id from Animal where owner = " + str(id_utilisateur) + ");"
+		req = "select date_insert, temp, animal from Temperature where owner = " + str(id_utilisateur) + ";"
 		s = self.c.execute(req).fetchall()
 
 		print("tous_les_s", s)
