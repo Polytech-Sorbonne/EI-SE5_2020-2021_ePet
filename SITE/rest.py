@@ -227,9 +227,51 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			print("data")
 			print(query['data'])
 
-			print("température")
-			print(query['data'][0][20:24])
-			temp = twos_complement(query['data'][0][20:24],16)
+			loc_mode= query['data'][0][18:20]
+
+			if(loc_mode==0x0):
+				bssid = twos_complement(query['data'][0][0:12],48)
+				rssi = twos_complement(query['data'][0][12:14],8)
+				print('rssi',query['data'][0][12:14])
+				print('bssid',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+			elif(loc_mode==0x1):
+				distx = twos_complement(query['data'][0][0:12],48)
+				print('distx',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+			elif(loc_mode==0x2):
+				disty = twos_complement(query['data'][0][0:12],48)
+				print('disty',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+			elif(loc_mode==0x3):
+				bssid = twos_complement(query['data'][0][0:12],48)
+				rssi = twos_complement(query['data'][0][12:14],8)
+				temp = twos_complement(query['data'][0][14:18],16)
+				print('bssid',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+				temp = float(temp/100)
+				print('temp',temp)
+			elif(loc_mode==0x4):
+				distx = twos_complement(query['data'][0][0:12],48)
+				temp = twos_complement(query['data'][0][14:18],16)
+				print('distx',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+				temp = float(temp/100)
+				print('temp',temp)
+			elif(loc_mode==0x5):
+				disty = twos_complement(query['data'][0][0:12],48)
+				temp = twos_complement(query['data'][0][14:18],16)
+				print('disty',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+				temp = float(temp/100)
+				print('temp',temp)
+			elif(loc_mode==0x6):
+				temp = twos_complement(query['data'][0][14:18],16)
+				temp = float(temp/100)
+				print('temp',temp)
+
+
+
+
+
+
+			"""print("température")
+			print(query['data'][0][14:18])
+			temp = twos_complement(query['data'][0][14:18],16)
 			temp = float(temp/100)
 			print(temp)
 
@@ -257,7 +299,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			print(rssid)
 
 			print("BSSID ")
-			print(query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+			print(query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])"""
 
 
 			self.send_response(200)
