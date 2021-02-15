@@ -514,17 +514,21 @@ class MySQL():
 		except:
 			pass
 
+		req = "select iddevice from Animal where owner = " + str(id_owner) + ";"
+		print("REQ2 = ", req )
+		liste_animaux = self.c.execute(req).fetchall()
+
 		for a in liste_animaux:
 			rang += 1
 			print("A",a)
-			print("A1", '"' + a[1] + '"')
+			print("A1", '"' + a[0] + '"')
 			print("Device", device)
-			if (device == '"' + a[1] + '"'):
+			if (device == '"' + a[0] + '"'):
 				break
 
 
 		req = "insert into Temperature (temp,date_insert,animal,owner) VALUES (" + str(temp) + ",CURRENT_TIMESTAMP, " + str(rang) + "," + str(id_owner) + ");"
-		print("REQ2 = ", req )
+		print("REQ3 = ", req )
 		self.c.execute(req)
 		self.conn.commit()
 
