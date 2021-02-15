@@ -48,6 +48,143 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			self.end_headers()
 		"""
 
+		if self.path[0:7] =="/device":
+			print('aaa')
+			#res = urllib.parse.urlparse(self.path)
+			#query = urllib.parse.parse_qs(res.query)
+			"""
+			print("query")
+			print(query)
+			print("device")
+			print(query['device'])
+			print("time")
+			print(query['time'])
+			print("data")
+			print(query['data'])
+			"""
+			tab = []
+			tab.append("8A9F6FE10E74CD0000000000")
+			tab.append("010001010100010000010000")
+			tab.append("010001010100010000020000")
+			tab.append("8A9F6FE10E74CD00FE030000")
+			tab.append("0100010101000100FE050000")
+			tab.append("0100010101000100FE060000")
+			tab.append("0000000000000000FE060000")
+
+			#loc_mode= query['data'][0][18:20]
+			for i in range(0,6):
+				data = tab[i]
+				loc_mode = data[18:20]
+
+				print("LOC_MODE", loc_mode)
+
+				if(loc_mode==00):
+					bssid = twos_complement(data[0:12],48)
+					rssi = twos_complement(data[12:14],8)
+					print('rssi',data[12:14])
+					print('bssid',data[0:2]+':'+data[2:4]+':'+data[4:6]+':'+data[6:8]+':'+data[8:10]+':'+data[10:12])
+				elif(loc_mode=="01"):
+					distx = twos_complement(data[0:12],48)
+					print('distx',data[0:2]+':'+data[2:4]+':'+data[4:6]+':'+data[6:8]+':'+data[8:10]+':'+data[10:12])
+				elif(loc_mode=="02"):
+					disty = twos_complement(data[0:12],48)
+					print('disty',data[0:2]+':'+data[2:4]+':'+data[4:6]+':'+data[6:8]+':'+data[8:10]+':'+data[10:12])
+				elif(loc_mode=="03"):
+					bssid = twos_complement(data[0:12],48)
+					rssi = twos_complement(data[12:14],8)
+					temp = twos_complement(data[14:18],16)
+					print('bssid',data[0:2]+':'+data[2:4]+':'+data[4:6]+':'+data[6:8]+':'+data[8:10]+':'+data[10:12])
+					temp = float(temp/100)
+					print('temp',temp)
+				elif(loc_mode=="04"):
+					distx = twos_complement(data[0:12],48)
+					temp = twos_complement(data[14:18],16)
+					print('distx',data[0:2]+':'+data[2:4]+':'+data[4:6]+':'+data[6:8]+':'+data[8:10]+':'+data[10:12])
+					temp = float(temp/100)
+					print('temp',temp)
+				elif(loc_mode=="05"):
+					disty = twos_complement(data[0:12],48)
+					temp = twos_complement(data[14:18],16)
+					print('disty',data[0:2]+':'+data[2:4]+':'+data[4:6]+':'+data[6:8]+':'+data[8:10]+':'+data[10:12])
+					temp = float(temp/100)
+					print('temp',temp)
+				elif(loc_mode=="06"):
+					temp = twos_complement(data[14:18],16)
+					temp = float(temp/100)
+					print('temp',temp)
+
+			# if(loc_mode==0x0):
+			# 	bssid = twos_complement(query['data'][0][0:12],48)
+			# 	rssi = twos_complement(query['data'][0][12:14],8)
+			# 	print('rssi',query['data'][0][12:14])
+			# 	print('bssid',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+			# elif(loc_mode==0x1):
+			# 	distx = twos_complement(query['data'][0][0:12],48)
+			# 	print('distx',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+			# elif(loc_mode==0x2):
+			# 	disty = twos_complement(query['data'][0][0:12],48)
+			# 	print('disty',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+			# elif(loc_mode==0x3):
+			# 	bssid = twos_complement(query['data'][0][0:12],48)
+			# 	rssi = twos_complement(query['data'][0][12:14],8)
+			# 	temp = twos_complement(query['data'][0][14:18],16)
+			# 	print('bssid',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+			# 	temp = float(temp/100)
+			# 	print('temp',temp)
+			# elif(loc_mode==0x4):
+			# 	distx = twos_complement(query['data'][0][0:12],48)
+			# 	temp = twos_complement(query['data'][0][14:18],16)
+			# 	print('distx',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+			# 	temp = float(temp/100)
+			# 	print('temp',temp)
+			# elif(loc_mode==0x5):
+			# 	disty = twos_complement(query['data'][0][0:12],48)
+			# 	temp = twos_complement(query['data'][0][14:18],16)
+			# 	print('disty',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+			# 	temp = float(temp/100)
+			# 	print('temp',temp)
+			# elif(loc_mode==0x6):
+			# 	temp = twos_complement(query['data'][0][14:18],16)
+			# 	temp = float(temp/100)
+			# 	print('temp',temp)
+			#
+			# print("température")
+			# print(query['data'][0][14:18])
+			# temp = twos_complement(query['data'][0][14:18],16)
+			# temp = float(temp/100)
+			# print(temp)
+			#
+			# print("accélération z")
+			# print(query['data'][0][18:20])
+			# z = twos_complement(query['data'][0][18:20],8)
+			# z = float(z/10)
+			# print(z)
+			#
+			# print("accélération y")
+			# print(query['data'][0][16:18])
+			# y = twos_complement(query['data'][0][16:18],8)
+			# y = float(y/10)
+			# print(y)
+			#
+			# print("accélération x")
+			# print(query['data'][0][14:16])
+			# x = twos_complement(query['data'][0][14:16],8)
+			# x = float(x/10)
+			# print(x)
+			#
+			# print("RSSID ")
+			# print(query['data'][0][12:14])
+			# rssid = int(query['data'][0][12:14],16)
+			# print(rssid)
+			#
+			# print("BSSID ")
+			# print(query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+
+
+			self.send_response(200)
+			self.send_header("Content-type", "text/html")
+			self.end_headers()
+
 		if self.path == "/Accueil":
 			self.send_response(200)
 			self.send_header("Content-type", "text/html")
@@ -213,100 +350,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 		# self.end_headers()
 
 
-
-		if self.path[0:7] =="/device":
-			res = urllib.parse.urlparse(self.path)
-			query = urllib.parse.parse_qs(res.query)
-
-			print("query")
-			print(query)
-			print("device")
-			print(query['device'])
-			print("time")
-			print(query['time'])
-			print("data")
-			print(query['data'])
-
-			loc_mode= query['data'][0][18:20]
-
-			if(loc_mode==0x0):
-				bssid = twos_complement(query['data'][0][0:12],48)
-				rssi = twos_complement(query['data'][0][12:14],8)
-				print('rssi',query['data'][0][12:14])
-				print('bssid',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
-			elif(loc_mode==0x1):
-				distx = twos_complement(query['data'][0][0:12],48)
-				print('distx',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
-			elif(loc_mode==0x2):
-				disty = twos_complement(query['data'][0][0:12],48)
-				print('disty',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
-			elif(loc_mode==0x3):
-				bssid = twos_complement(query['data'][0][0:12],48)
-				rssi = twos_complement(query['data'][0][12:14],8)
-				temp = twos_complement(query['data'][0][14:18],16)
-				print('bssid',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
-				temp = float(temp/100)
-				print('temp',temp)
-			elif(loc_mode==0x4):
-				distx = twos_complement(query['data'][0][0:12],48)
-				temp = twos_complement(query['data'][0][14:18],16)
-				print('distx',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
-				temp = float(temp/100)
-				print('temp',temp)
-			elif(loc_mode==0x5):
-				disty = twos_complement(query['data'][0][0:12],48)
-				temp = twos_complement(query['data'][0][14:18],16)
-				print('disty',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
-				temp = float(temp/100)
-				print('temp',temp)
-			elif(loc_mode==0x6):
-				temp = twos_complement(query['data'][0][14:18],16)
-				temp = float(temp/100)
-				print('temp',temp)
-
-
-
-
-
-
-			"""print("température")
-			print(query['data'][0][14:18])
-			temp = twos_complement(query['data'][0][14:18],16)
-			temp = float(temp/100)
-			print(temp)
-
-			print("accélération z")
-			print(query['data'][0][18:20])
-			z = twos_complement(query['data'][0][18:20],8)
-			z = float(z/10)
-			print(z)
-
-			print("accélération y")
-			print(query['data'][0][16:18])
-			y = twos_complement(query['data'][0][16:18],8)
-			y = float(y/10)
-			print(y)
-
-			print("accélération x")
-			print(query['data'][0][14:16])
-			x = twos_complement(query['data'][0][14:16],8)
-			x = float(x/10)
-			print(x)
-
-			print("RSSID ")
-			print(query['data'][0][12:14])
-			rssid = int(query['data'][0][12:14],16)
-			print(rssid)
-
-			print("BSSID ")
-			print(query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])"""
-
-
-			self.send_response(200)
-			self.send_header("Content-type", "text/html")
-			self.end_headers()
-
-		elif self.path == "/index.html":
+		if self.path == "/index.html":
 			print("Validation")
 			q = self.rfile.read(int(self.headers['content-length'])).decode(encoding="utf-8")
 			query = urllib.parse.parse_qs(q,keep_blank_values=1,encoding='utf-8')
@@ -354,10 +398,6 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 				with open('log-error.html', 'r') as f:
 					html = f.read()
 					self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
-
-
-
-
 
 
 class MySQL():
