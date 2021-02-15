@@ -323,57 +323,61 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 					html = f.read()
 					self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
 
-			if self.path[0:7] =="/device":
-				res = urllib.parse.urlparse(self.path)
-				query = urllib.parse.parse_qs(res.query)
+		if self.path[0:7] =="/device":
+			res = urllib.parse.urlparse(self.path)
+			query = urllib.parse.parse_qs(res.query)
 
-				print("query")
-				print(query)
-				print("device")
-				print(query['device'])
-				print("time")
-				print(query['time'])
-				print("data")
-				print(query['data'])
+			print("query")
+			print(query)
+			print("device")
+			print(query['device'])
+			print("time")
+			print(query['time'])
+			print("data")
+			print(query['data'])
 
-				device = str(query['device'])
+			data = str(query['data'])
+			loc_mode = data[20:22]
+			print("LOC_MODE:",loc_mode)
+
+			device = str(query['device'][0])
 
 
-				if(loc_mode==0x0):
-					bssid = twos_complement(query['data'][0][0:12],48)
-					rssi = twos_complement(query['data'][0][12:14],8)
-					print('rssi',query['data'][0][12:14])
-					print('bssid',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
-				elif(loc_mode==0x1):
-					distx = twos_complement(query['data'][0][0:12],48)
-					print('distx',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
-				elif(loc_mode==0x2):
-					disty = twos_complement(query['data'][0][0:12],48)
-					print('disty',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
-				elif(loc_mode==0x3):
-					bssid = twos_complement(query['data'][0][0:12],48)
-					rssi = twos_complement(query['data'][0][12:14],8)
-					temp = twos_complement(query['data'][0][14:18],16)
-					print('bssid',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
-					temp = float(temp/100)
-					print('temp',temp)
-					insert_temp(device,temp):
-				elif(loc_mode==0x4):
-					distx = twos_complement(query['data'][0][0:12],48)
-					temp = twos_complement(query['data'][0][14:18],16)
-					print('distx',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
-					temp = float(temp/100)
-					print('temp',temp)
-				elif(loc_mode==0x5):
-					disty = twos_complement(query['data'][0][0:12],48)
-					temp = twos_complement(query['data'][0][14:18],16)
-					print('disty',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
-					temp = float(temp/100)
-					print('temp',temp)
-				elif(loc_mode==0x6):
-					temp = twos_complement(query['data'][0][14:18],16)
-					temp = float(temp/100)
-					print('temp',temp)
+			if(loc_mode=="00"):
+				bssid = twos_complement(query['data'][0][0:12],48)
+				rssi = twos_complement(query['data'][0][12:14],8)
+				print('rssi',query['data'][0][12:14])
+				print('bssid',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+			elif(loc_mode=="01"):
+				distx = twos_complement(query['data'][0][0:12],48)
+				print('distx',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+			elif(loc_mode=="02"):
+				disty = twos_complement(query['data'][0][0:12],48)
+				print('disty',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+			elif(loc_mode=="03"):
+				bssid = twos_complement(query['data'][0][0:12],48)
+				rssi = twos_complement(query['data'][0][12:14],8)
+				temp = twos_complement(query['data'][0][14:18],16)
+				print('bssid',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+				temp = float(temp/100)
+				print('temp',temp)
+				self.mysql.insert_temp(device,temp)
+			elif(loc_mode=="04"):
+				distx = twos_complement(query['data'][0][0:12],48)
+				temp = twos_complement(query['data'][0][14:18],16)
+				print('distx',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+				temp = float(temp/100)
+				print('temp',temp)
+			elif(loc_mode=="05"):
+				disty = twos_complement(query['data'][0][0:12],48)
+				temp = twos_complement(query['data'][0][14:18],16)
+				print('disty',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+				temp = float(temp/100)
+				print('temp',temp)
+			elif(loc_mode=="06"):
+				temp = twos_complement(query['data'][0][14:18],16)
+				temp = float(temp/100)
+				print('temp',temp)
 
 				# print("température")
 				# print(query['data'][0][14:18])
@@ -407,18 +411,14 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 				# print("BSSID ")
 				# print(query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
 
-				self.send_response(200)
-				self.send_header("Content-type", "text/html")
-				self.end_headers()
-
-
 			else:
-				self.send_response(200)
-				self.send_header("Content-type", "text/html")
-				self.end_headers()
 				with open('log-error.html', 'r') as f:
 					html = f.read()
 					self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
+
+			self.send_response(200)
+			self.send_header("Content-type", "text/html")
+			self.end_headers()
 
 
 class MySQL():
@@ -502,22 +502,29 @@ class MySQL():
 
 	def insert_temp(self,device,temp):
 		req = "select owner, iddevice from Animal where iddevice = " + device + ";"
-		liste_animaux = self.c.execute(req)
+		print("REQ1 = ", req )
+		liste_animaux = self.c.execute(req).fetchall()
 		rang = 0
+
+		print("LISTE ANIMAUX", liste_animaux)
 
 		try:
 			id_owner = liste_animaux[0][0]
+			print("ID_OWNER", id_owner)
 		except:
 			pass
 
 		for a in liste_animaux:
 			rang += 1
-			if (device == liste_animaux[0][1]):
+			print("A",a)
+			print("A1", '"' + a[1] + '"')
+			print("Device", device)
+			if (device == '"' + a[1] + '"'):
 				break
 
 
-		req = "insert into Temperature (temp,date_insert,animal,owner) VALUES (" + temp + ",CURRENT_TIMESTAMP, " + rang + "," + id_owner + ");"
-
+		req = "insert into Temperature (temp,date_insert,animal,owner) VALUES (" + str(temp) + ",CURRENT_TIMESTAMP, " + str(rang) + "," + str(id_owner) + ");"
+		print("REQ2 = ", req )
 		self.c.execute(req)
 		self.conn.commit()
 
