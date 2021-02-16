@@ -324,6 +324,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 					self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
 
 		if self.path[0:7] =="/device":
+			print(self.path)
 			res = urllib.parse.urlparse(self.path)
 			query = urllib.parse.parse_qs(res.query)
 

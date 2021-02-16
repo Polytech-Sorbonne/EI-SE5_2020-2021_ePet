@@ -22,7 +22,7 @@ def signalStrength_formatage(strength):
     strength_format = twos_complement(strength,8) #version hex de 0xstrentgh
     return str(strength_format)
 
-#test
+###########   test ###########
 macAdress = []
 signalStrength = []
 
@@ -42,24 +42,35 @@ for i in range (2):
     print("version formatée:", signalStrength_formatage(signalStrength[i]))
     print("--")
 # formation du message json
+file = open("mac_adresses.json","w")
+json_file = '''{ \n"considerIp": "false",\n'''
+json_file +=''' "wifiAccessPoints": [\n'''
+json_file +='''     {\n'''
+json_file +='''         "macAddress":"''' + macAdress_formatage(macAdress[0]) + '''",\n'''
+json_file +='''         "signalStrength":''' + signalStrength_formatage(signalStrength[0]) + ''',\n'''
+json_file +='''         "signalToNoiseRatio": 0\n'''
+json_file +='''     },\n'''
+json_file +='''     {\n'''
+json_file +='''         "macAddress":"''' + macAdress_formatage(macAdress[1]) + '''",\n'''
+json_file +='''         "signalStrength":''' + signalStrength_formatage(signalStrength[1]) + ''',\n'''
+json_file +='''         "signalToNoiseRatio": 0\n'''
+json_file +='''     }\n'''
+json_file +=''' ]\n'''
+json_file +='''}\n'''
 
-json_file = '''{ "considerIp": "false",'''
-json_file +=''' "wifiAccessPoints": ['''
-json_file +='''{'''
-json_file +='''"macAddress":''' + macAdress_formatage(macAdress[0]) + ''','''
-json_file +='''"signalStrength":''' + signalStrength_formatage(signalStrength[0]) + ''','''
-json_file +='''"signalToNoiseRatio": 0'''
-json_file +='''},'''
-json_file +='''{'''
-json_file +='''"macAddress":''' + macAdress_formatage(macAdress[1]) + ''','''
-json_file +='''"signalStrength":''' + signalStrength_formatage(signalStrength[1]) + ''','''
-json_file +='''"signalToNoiseRatio": 0'''
-json_file +='''}'''
-json_file +=''']'''
-json_file +='''}'''
+file.write(json_file)
+file.close()
 
+#key a remplacer par celle de Melissa dans le trello
 url = 'https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyCCTcKvwLkjGwK4P-TLDe9o2hi-9-On0NE'
 donnees = json.loads(json_file)
-requests.post(url, data=donnees)
-reponse = json.dumps(r.json)
+print("donnees = ",donnees)
+print("")
+print(donnees["wifiAccessPoints"][0])
+donnees_json =  json.dumps(donnees)
+r = requests.post(url, data=donnees_json)
+print("reponse : ", r)
+reponse = r.json()
 print(reponse)
+print("lat = ",reponse['location']['lat'])
+print("long= ",reponse['location']['lng'])
