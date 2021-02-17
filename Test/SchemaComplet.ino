@@ -1,3 +1,5 @@
+// ############################ Librairies ############################
+
 // Librairies Accéléromètre
 #include <Wire.h>
 #include <Adafruit_MMA8451.h>
@@ -10,16 +12,57 @@
 //Librairies Température
 #include "Adafruit_SHTC3.h"
 
+
+// ############################ Macros ############################
+
+#define DEBUG true
 #define RX0 16 // PIN RX0 <=> D3
 #define TX0 17 // PIN TX0 <=> D1
+#define NB_SECOND 60 // 1 min
+
+//Accelerometre
+#define SEUILX 2.5 
+#define SEUILY 2.5
+
+//seuils sur X et Y accumulés pendant 15 minutes
+#define Xaddseuil 10
+#define Yaddseuil 10
+
+// ############################ Variables ############################
 
 Adafruit_MMA8451 mma = Adafruit_MMA8451();
 
 // Message SigFox
 byte bssid1_prec[6], bssid2_prec[6], bssid1[6], bssid2[6];
 byte rssi1, rssi2; 
-int temp1, temp2;
-int Xseuil, Yseuil, x, y;
+
+// Température
+int t, temp1, temp2;
+//tableaux des températures sur 15 minutes
+int temp_tab[7];
+
+hw_timer_t * timer;
+volatile int interruptCounter;
+volatile int minutes;
+int totalInterruptCounter;
+sensors_event_t humidity, temp;
+sensors_event_t event;
+
+double x_0;
+double x_1;
+double y_0;
+double y_1;
+
+double diffX = 0;
+double diffY = 0;
+int countX = 0 ,countY = 0;
+int countmintX = 0, countmintY = 0;
+int addedcountX = 0, addedcountY = 0; 
+
+//tableaux des mouvements sur les deux axes sur 15 minutes 
+int mouvX[15];
+int mouvY[15];
+
 String status = "";
 char output;
 
@@ -171,41 +214,40 @@ Adafruit_SHTC3 shtc3 = Adafruit_SHTC3();
 
 TwoWire I2CBME = TwoWire(0);
 
-void setup()
+// ############################ Debug ############################
+
+// Print on Serial if debug == true
+void debug(char * msg )
 {
-    // Note the format for setting a serial port is as follows: Serial2.begin(baud-rate, protocol, RX pin, TX pin);
-    Serial2.begin(9600);
-    Serial.begin(115200);
-    pinMode(RX0, INPUT);
-    pinMode(TX0, OUTPUT);
-
-    // Set WiFi to station mode and disconnect from an AP if it was previously connected
-    WiFi.mode(WIFI_STA);
-    WiFi.disconnect();
-    delay(100);
-
-    Serial.println("Setup done");
-
-    if (! mma.begin()) {
-    Serial.println("Couldnt start");
-    while (1);
-    }
-    Serial.println("MMA8451 found!");
-
-    // Range 2G, 4G, 8G
-    mma.setRange(MMA8451_RANGE_2_G);
-
-    // getRange() -> 2G = 1, 4G = 2, 8G = 3
-    Serial.print("Range = "); Serial.print(2 << mma.getRange());  
-    Serial.println("G");
-
-    Serial.println("SHTC3 test");
-  if (! shtc3.begin()) {
-    Serial.println("Couldn't find SHTC3");
-    while (1) delay(1);
+  if (DEBUG)
+  {
+    Serial.println(msg);
   }
-  Serial.println("Found SHTC3 sensor");
 }
+// print int values if debug == true
+void debug_int(int value)
+{
+  if (DEBUG)
+  {
+    Serial.println(value);
+  }
+}
+void debug_hex(int hex)
+{
+   if (DEBUG)
+  {
+    Serial.println(hex,HEX);
+  }
+  
+}
+// ############################ Interruption ############################
+
+// timer routine
+void IRAM_ATTR onTimer() {
+  interruptCounter++;
+}
+
+// ############################ Fonctions de traduction ############################
 
 //Permet d'obtenir l'adresse MAC d'un WIFI en string 
 String getValue(String data, char separator, int index)
@@ -235,22 +277,86 @@ int convStringToInt(char s){
   return 0;
 }
 
-// Compare une adresse MAC détectée avec celles présentes dans le tableau mac
-bool testMacAdresse(String id_add){
-  String id_const;
-  for(int i = 0; i < sizeof(mac) / sizeof(mac[0]); i++){ 
-      id_const = String(mac[i]);
-      if(id_add.equalsIgnoreCase(id_const)){
-        Serial.println("Les id sont identiques");
-        Serial.print("Id adresse MAC : ");
-        Serial.println(id_add);
-        Serial.print("Id adresse MAC Constructeur : ");
-        Serial.println(id_const);
-        return false; 
-      }  
-   }
-   return true; 
+//Converti un float en hexa
+byte convFloatToHex(float x){
+  int integer = x * 10;
+  Serial.print("Integer : ");
+  Serial.println(integer);
+  byte res = integer & 0xFF;
+  Serial.print("Hexa : ");
+  Serial.println(res);
+  return res ;
 }
+
+//Conversion d'un float en int
+int convFloatToInt(float x){
+  int integer = x * 100;
+  Serial.print("Integer : ");
+  Serial.println(integer);
+  return integer ;
+}
+
+//Converti température en une chaîne de caractère
+void convByteToCharTemp(int temp, char *temp_trad){
+  String trad = "";
+  if (temp < 4096){
+      trad.concat('0');
+  }
+  trad.concat(String(temp,HEX));
+  trad.toCharArray(temp_trad, 5); 
+  Serial.println(temp_trad);
+  
+}
+
+//Converti le bssid en une chaîne de caractère
+void convByteToCharBssid(byte bssid[6], byte rssi, char *bssid_trad){
+  String trad = "";
+  for(int i = 0; i < 6; i++){
+    if (bssid[i] < 16){
+      trad.concat('0');
+    }
+    trad.concat(String(bssid[i],HEX));
+  }
+  if (rssi < 16){
+      trad.concat(String('0'));
+  }
+  trad.concat(String(rssi,HEX));
+  trad.toCharArray(bssid_trad, 15); 
+  Serial.println(bssid_trad);
+}
+
+//Convertit des informations de mouvement en une chaîne de caractère
+void convByteToCharAcc(int mouv_tab[15], char *x_trad){
+  debug("convBytetochar");
+  String trad = "";
+  for (int i = 0; i < 14; i++)
+  {
+    trad.concat(String(mouv_tab[i+1],HEX)); // stocker les 14 dernières infos sur le mouvement sur X dans x_trad
+  }
+  trad.toCharArray(x_trad, 14); 
+  debug(x_trad);
+  
+}
+
+//Moyenne des températures
+int moyTemp(int temp_tab[7], int nb){ // NB = 3 ou 4 
+  int som = 0;
+  if(nb == 3){
+    for(int i = 0; i < nb; i++){
+    som += temp_tab[i];
+    }
+    return som/3;
+  }
+  if(nb == 4){
+    for(int i = 3; i < 7; i++){
+    som += temp_tab[i];
+    }
+    return som/4;
+  }
+  return 0;
+}
+
+// ############################ Fonctions pour les capteurs ############################
 
 // Détecte les WIFI au alentour
 void detection_wifi(){
@@ -341,77 +447,102 @@ void detection_wifi(){
   }
 }
 
-//Converti un float en hexa
-byte convFloatToHex(float x){
-  int integer = x * 10;
-  Serial.print("Integer : ");
-  Serial.println(integer);
-  byte res = integer & 0xFF;
-  Serial.print("Hexa : ");
-  Serial.println(res);
-  return res ;
-}
-
-//Permet de definir le mouvement          PEUT ETRE A REVOIR
-void accelerometre(Adafruit_MMA8451 mma){
- 
-  /* Get a new sensor event */ 
-  sensors_event_t event; 
-  mma.getEvent(&event);
-
-  /* Display the results (acceleration is measured in m/s^2) */
-  Serial.print("X: \t"); Serial.print(event.acceleration.x); Serial.print("\t");
-  Serial.print("Y: \t"); Serial.print(event.acceleration.y); Serial.print("\t");
-  Serial.print("Z: \t"); Serial.print(event.acceleration.z); Serial.print("\t");
-  Serial.println("m/s^2 ");
-
-  //Ajouter le formatage des données pour Sigfox
-  
-  // data_Sigfox[7] = event.acceleration.x
-//  byte res;
-//  data_Sigfox[7] = convFloatToHex(event.acceleration.x);
-//  Serial.print("data Sigfox 7 : ");
-//  Serial.println(data_Sigfox[7], HEX);
-//  
-//  // data_Sigfox[8] = event.acceleration.y
-//  data_Sigfox[8] = convFloatToHex(event.acceleration.y);
-//  Serial.print("data Sigfox 8 : ");
-//  Serial.println(data_Sigfox[8], HEX);
-//
-//  // data_Sigfox[9] = event.acceleration.y
-//  data_Sigfox[9] = convFloatToHex(event.acceleration.z);
-//  Serial.print("data Sigfox 9 : ");
-//  Serial.println(data_Sigfox[9], HEX);
-}
-
-//Conversion d'un float en int
-int convFloatToInt(float x){
-  int integer = x * 100;
-  Serial.print("Integer : ");
-  Serial.println(integer);
-  return integer ;
-}
-
-// Récupération de 2 données de température          PEUT ETRE A REVOIR
-int temperature(){
-  sensors_event_t humidity,temp;
-  shtc3.getEvent(&humidity,&temp);// populate temp object with fresh data
-  
-  Serial.print("Temperature: "); Serial.print(temp.temperature); Serial.println(" degrees C");
-  float tmp = temp.temperature;
-  temp1 = convFloatToInt(tmp);
-  int t = 0; //delay(450000); // => 7 min 30 s à voir 
-  while(t < 15){
-    shtc3.getEvent(&humidity,&temp);
-    tmp = temp.temperature;
-    temp2 = convFloatToInt(tmp);
-    if(abs(temp1 - temp2) > 1){
-      break;
+void taskOne(void* parameter){
+    while(1){
+    mma.getEvent(&event);
+    //Serial.println("temperature");
+    Serial.print("Temperature: "); Serial.print(temp.temperature); Serial.println(" degrees C");
+    float tmp = temp.temperature;
+    Serial.print("An interrupt as occurred. Total number: ");
+    Serial.println(totalInterruptCounter);
+    t = convFloatToInt(tmp);
+    temp_tab[totalInterruptCounter] = t;
+    if (totalInterruptCounter == 6) {
+      for (int i = 0; i < 7; i++) {
+        Serial.print("Température n° "); Serial.print(i); Serial.print(": temp : "); Serial.println(temp_tab[i]);
+      }
+      totalInterruptCounter = 0;
     }
-    delay(30000);
-    t = t + 1;
+  //accelero 
+  //accelerometre
+    Serial.println("Accelero mesure");
+     mma.getEvent(&event);
+      mma.read();
+      x_1 = event.acceleration.x;
+      y_1 = event.acceleration.y;
+      Serial.print("x_1 : ");Serial.println(x_1);
+      Serial.print("y_1 : ");Serial.println(y_1);
+      diffX = x_1 - x_0;
+      diffY = y_1 - y_0;
+      if (abs(diffX) > SEUILX)
+      {
+        countX ++;
+        Serial.println("Mouvement sur X detecte");
+        mouvX[minutes%15] = 1; 
+      } 
+      else
+      {
+        mouvX[minutes%15] = 0; 
+      }
+      if (abs(diffY) > SEUILY)
+      {
+        countY ++;
+        Serial.println("Mouvement sur Y detecte");
+        mouvY[minutes%15] = 1; 
+      } 
+      else
+      {
+        mouvY[minutes%15] = 0; 
+      }
+      x_0 = x_1;
+      y_0 = y_1;
+    
+    vTaskDelay(60000);
   }
 }
+
+// ############################ Tests ############################
+
+// Compare une adresse MAC détectée avec celles présentes dans le tableau mac
+bool testMacAdresse(String id_add){
+  String id_const;
+  for(int i = 0; i < sizeof(mac) / sizeof(mac[0]); i++){ 
+      id_const = String(mac[i]);
+      if(id_add.equalsIgnoreCase(id_const)){
+        Serial.println("Les id sont identiques");
+        Serial.print("Id adresse MAC : ");
+        Serial.println(id_add);
+        Serial.print("Id adresse MAC Constructeur : ");
+        Serial.println(id_const);
+        return false; 
+      }  
+   }
+   return true; 
+}
+
+// Détermination des cas
+int testCas(){
+  temp1 = moyTemp(temp_tab, 3);
+  temp2 = moyTemp(temp_tab, 4);
+  if(temp1 < 3798 or temp1 > 3902 or temp2 < 3798 or temp2 > 3902){
+    if(Xaddseuil < countX or Yaddseuil < countY){
+      if(bssid1 != bssid1_prec and bssid2 != bssid2_prec)
+        return 5;
+      return 3;
+    }
+    return 1;
+  }
+  else{
+    if(Xaddseuil < countX or Yaddseuil < countY){
+      if(bssid1 != bssid1_prec and bssid2 != bssid2_prec)
+        return 4;
+      return 2;
+    }
+    return 0;
+  }
+}
+
+// ############################ Formation & envoie de messages ############################
 
 //Envoie des messages
 void send_message(char* msg){
@@ -439,59 +570,6 @@ void send_message(char* msg){
   delay(1000);
 }
 
-//Converti le bssid en une chaîne de caractère
-void convByteToCharBssid(byte bssid[6], byte rssi, char *bssid_trad){
-  String trad = "";
-  for(int i = 0; i < 6; i++){
-    if (bssid[i] < 16){
-      trad.concat('0');
-    }
-    trad.concat(String(bssid[i],HEX));
-  }
-  if (rssi < 16){
-      trad.concat(String('0'));
-  }
-  trad.concat(String(rssi,HEX));
-  trad.toCharArray(bssid_trad, 15); 
-  Serial.println(bssid_trad);
-}
-
-//Converti température en une chaîne de caractère
-void convByteToCharTemp(int temp, char *temp_trad){
-  String trad = "";
-  if (temp < 4096){
-      trad.concat('0');
-  }
-  trad.concat(String(temp,HEX));
-  trad.toCharArray(temp_trad, 5); 
-  Serial.println(temp_trad);
-  
-}
-
-//Converti position en une chaîne de caractère
-//void convByteToCharAcc(int x, char *x_trad){
-//  
-//}
-
-// Détermination des cas
-int testCas(){
-  if(temp1 < 3798 or temp1 > 3902 or temp2 < 3798 or temp2 > 3902){
-    if(Xseuil < x or Yseuil < y){
-      if(bssid1 != bssid1_prec and bssid2 != bssid2_prec)
-        return 5;
-      return 3;
-    }
-    return 1;
-  }
-  else{
-    if(Xseuil < x or Yseuil < y){
-      if(bssid1 != bssid1_prec and bssid2 != bssid2_prec)
-        return 4;
-      return 2;
-    }
-    return 0;
-  }
-}
 
 //Formation des messages          A TESTER
 void format_message(){
@@ -502,8 +580,8 @@ void format_message(){
   char *bssid2_trad = (char *)malloc(15 * sizeof(char));
   char *temp1_trad = (char *)malloc(5 * sizeof(char));
   char *temp2_trad = (char *)malloc(5 * sizeof(char));
-  char *x_trad = (char *)malloc(5 * sizeof(char));
-  char *y_trad = (char *)malloc(5 * sizeof(char));
+  char *x_trad = (char *)malloc(15 * sizeof(char));
+  char *y_trad = (char *)malloc(15 * sizeof(char));
 
   //Initialisation des messages
   snprintf(mess1, 30 * sizeof(char), "AT$SF=") ;
@@ -523,41 +601,41 @@ void format_message(){
       strcat(mess1, "06");      
       break;
       
-//    case 2: // Température normal & mouvement présent & pas chgmt localisation
-//
-//      convByteToCharAcc(x, x_trad);
-//      convByteToCharAcc(y, y_trad);
-//       
-//      strcat(mess1, x_trad);
-//      strcat(mess2, y_trad);
-//
-//      strcat(mess1, "00000000000000");
-//      strcat(mess2, "00000000000000");
-//
-//      strcat(mess1, "01");
-//      strcat(mess2, "02");    
-//      break;
-//      
-//    case 3: // Température anormal & mouvement présent & pas chgmt localisation
-//
-//      convByteToCharAcc(x, x_trad);
-//      convByteToCharAcc(y, y_trad);
-//       
-//      strcat(mess1, x_trad);
-//      strcat(mess2, y_trad);
-//
+    case 2: // Température normal & mouvement présent & pas chgmt localisation
+
+      convByteToCharAcc(mouvX, x_trad);
+      convByteToCharAcc(mouvY, y_trad);
+       
+      strcat(mess1, x_trad);
+      strcat(mess2, y_trad);
+
+      strcat(mess1, "00000000000000");
+      strcat(mess2, "00000000000000");
+
+      strcat(mess1, "01");
+      strcat(mess2, "02");    
+      break;
+      
+    case 3: // Température anormal & mouvement présent & pas chgmt localisation
+
+      convByteToCharAcc(mouvX, x_trad);
+      convByteToCharAcc(mouvY, y_trad);
+       
+      strcat(mess1, x_trad);
+      strcat(mess2, y_trad);
+
 //      strcat(mess1, "0000000000");
 //      strcat(mess2, "0000000000");
-//  
-//      convByteToCharTemp(temp1, temp1_trad);
-//      convByteToCharTemp(temp2, temp2_trad);
-//             
-//      strcat(mess1, temp1_trad);
-//      strcat(mess2, temp2_trad);
-//
-//      strcat(mess1, "04");
-//      strcat(mess2, "05");
-//      break;
+  
+      convByteToCharTemp(temp1, temp1_trad);
+      convByteToCharTemp(temp2, temp2_trad);
+             
+      strcat(mess1, temp1_trad);
+      strcat(mess2, temp2_trad);
+
+      strcat(mess1, "04");
+      strcat(mess2, "05");
+      break;
       
     case 4: // Température normal & mouvement présent & chgmt localisation
       
@@ -629,10 +707,74 @@ void format_message(){
   delay(5000);  
 }
 
-void loop()
+// ############################ Set up ############################
+
+void setup()
 {
+  // Note the format for setting a serial port is as follows: Serial2.begin(baud-rate, protocol, RX pin, TX pin);
+  Serial2.begin(9600);
+  Serial.begin(115200);
+  pinMode(RX0, INPUT);
+  pinMode(TX0, OUTPUT);
+
+  //creation du timer
+  timer = timerBegin(0, 80, true);
+  timerAttachInterrupt(timer, &onTimer, true);
+  timerAlarmWrite(timer, NB_SECOND * 1000000, true);   // 1 000 000 ms = 1 s
+  timerAlarmEnable(timer);
+
+  // Set WiFi to station mode and disconnect from an AP if it was previously connected
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+  btStop();
+  delay(100);
+
+  Serial.println("Setup done");
+
+  if (! mma.begin()) {
+    Serial.println("Couldnt start");
+    while (1);
+  }
+  Serial.println("MMA8451 found!");
+
+  // Range 2G, 4G, 8G
+  mma.setRange(MMA8451_RANGE_2_G);
+
+  // getRange() -> 2G = 1, 4G = 2, 8G = 3
+  Serial.print("Range = "); Serial.print(2 << mma.getRange());  
+  Serial.println("G");
+
+  Serial.println("SHTC3 test");
+  if (!shtc3.begin()) {
+    Serial.println("Couldn't find SHTC3");
+    while (1) delay(1);
+  }
+  Serial.println("Found SHTC3 sensor");
+
+  //initialisation des données d'acceleration
+  mma.getEvent(&event);
+  x_0 = event.acceleration.x;
+  y_0 = event.acceleration.y;
+
+  Serial.print("init X0 : ");Serial.println(x_0);
+  Serial.print("init Y0 : ");Serial.println(y_0);
+  shtc3.getEvent(&humidity, &temp); // populate temp object with fresh data
+  
+  xTaskCreate(taskOne,"taskOne",1000, NULL, 1,NULL);
+}
+
+// ############################ Loop ############################
+
+void loop()
+{   
+  if (interruptCounter > 0) {
+    interruptCounter--;
+    minutes++;
+    totalInterruptCounter++;
+    shtc3.getEvent(&humidity, &temp); // populate temp object with fresh data
+  }
+  if(minutes%15 == 0 and totalInterruptCounter != 0){
     detection_wifi();
-//    accelerometre(mma);
-//    temperature();
-    format_message();    
+    format_message();  
+  }
 }
