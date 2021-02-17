@@ -18,13 +18,14 @@
 #define DEBUG true
 #define RX0 16 // PIN RX0 <=> D3
 #define TX0 17 // PIN TX0 <=> D1
-#define NB_SECOND 60 // 1 min
+#define NB_SECOND 60/15 // 1 min
+#define DELAY_TASK 60000 / 15
 
 //Accelerometre
 #define SEUILX 2.5 
 #define SEUILY 2.5
 
-//seuils sur X et Y accumulés pendant 15 minutes
+//seuils sur X et Y accumulés pendant 15 minutes_acc
 #define Xaddseuil 10
 #define Yaddseuil 10
 
@@ -38,12 +39,12 @@ byte rssi1, rssi2;
 
 // Température
 int t, temp1, temp2;
-//tableaux des températures sur 15 minutes
+//tableaux des températures sur 15 minutes_acc
 int temp_tab[7];
 
 hw_timer_t * timer;
 volatile int interruptCounter;
-volatile int minutes;
+volatile int minutes_acc;
 int totalInterruptCounter;
 sensors_event_t humidity, temp;
 sensors_event_t event;
@@ -59,7 +60,7 @@ int countX = 0 ,countY = 0;
 int countmintX = 0, countmintY = 0;
 int addedcountX = 0, addedcountY = 0; 
 
-//tableaux des mouvements sur les deux axes sur 15 minutes 
+//tableaux des mouvements sur les deux axes sur 15 minutes_acc 
 int mouvX[15];
 int mouvY[15];
 
@@ -455,6 +456,7 @@ void taskOne(void* parameter){
     float tmp = temp.temperature;
     Serial.print("An interrupt as occurred. Total number: ");
     Serial.println(totalInterruptCounter);
+    Serial.print("and minutes = ");Serial.println(minutes_acc);
     t = convFloatToInt(tmp);
     temp_tab[totalInterruptCounter] = t;
     if (totalInterruptCounter == 6) {
@@ -474,30 +476,40 @@ void taskOne(void* parameter){
       Serial.print("y_1 : ");Serial.println(y_1);
       diffX = x_1 - x_0;
       diffY = y_1 - y_0;
+
+
       if (abs(diffX) > SEUILX)
       {
         countX ++;
         Serial.println("Mouvement sur X detecte");
-        mouvX[minutes%15] = 1; 
+        mouvX[minutes_acc] = 1; 
       } 
       else
       {
-        mouvX[minutes%15] = 0; 
+        mouvX[minutes_acc] = 0; 
       }
       if (abs(diffY) > SEUILY)
       {
         countY ++;
         Serial.println("Mouvement sur Y detecte");
-        mouvY[minutes%15] = 1; 
+        mouvY[minutes_acc] = 1; 
       } 
       else
       {
-        mouvY[minutes%15] = 0; 
+        mouvY[minutes_acc] = 0; 
       }
       x_0 = x_1;
       y_0 = y_1;
+
+      //remise à zero des compteurs de X et Y
+      if (minutes_acc == 15 )
+      {
+        countX = 0;
+        countY = 0;
+        minutes_acc = 0 ;
+       }
     
-    vTaskDelay(60000);
+    vTaskDelay(DELAY_TASK);
   }
 }
 
@@ -542,7 +554,7 @@ int testCas(){
   }
 }
 
-// ############################ Formation & envoie de messages ############################
+// ############################ Formation & envoi de messages ############################
 
 //Envoie des messages
 void send_message(char* msg){
@@ -760,7 +772,7 @@ void setup()
   Serial.print("init Y0 : ");Serial.println(y_0);
   shtc3.getEvent(&humidity, &temp); // populate temp object with fresh data
   
-  xTaskCreate(taskOne,"taskOne",1000, NULL, 1,NULL);
+  xTaskCreate(taskOne,"taskOne",100000, NULL, 1,NULL);
 }
 
 // ############################ Loop ############################
@@ -769,12 +781,13 @@ void loop()
 {   
   if (interruptCounter > 0) {
     interruptCounter--;
-    minutes++;
+    minutes_acc++;
     totalInterruptCounter++;
     shtc3.getEvent(&humidity, &temp); // populate temp object with fresh data
-  }
-  if(minutes%15 == 0 and totalInterruptCounter != 0){
-    detection_wifi();
-    format_message();  
+  
+     if(minutes_acc%15 == 0 and totalInterruptCounter != 0){
+        detection_wifi();
+        format_message();  
+    }
   }
 }
