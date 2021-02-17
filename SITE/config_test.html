@@ -145,7 +145,7 @@
     <button class="btn active" onclick="filterSelection('Animals')"> animals</button>
   </div>
   <br>
-<a href="/Loc-0" <button>franklin </button></a>
+<a href="/Loc-0" <button>tokyo </button></a><a href="/Loc-1" <button>chanel </button></a>
 <div id="mapid" style="width: 100%; height: 400px;"></div>
 <div>
 <p></p>
@@ -172,7 +172,7 @@
 
 <script>
   var mymap = L.map('mapid').setView([
-2.0,3.0], 11);
+49.8566,2.3522], 11);
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
 	maxZoom: 18,
 	attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' + 'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -180,8 +180,8 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 	tileSize: 512,
 	zoomOffset: -1
 }).addTo(mymap);
-L.marker([2.0,3.0]).addTo(mymap)
-L.polygon([[1.0,1.0],[2.0,4.0],[3.0,2.0]]).addTo(mymap);
+L.marker([49.8566,2.3522]).addTo(mymap)
+L.polygon([[48.8852,2.3856],[48.8354,2.4055],[48.9056,2.4044]]).addTo(mymap);
 
 
   	var popup = L.popup();
