@@ -19,8 +19,8 @@ CREATE TABLE Perimeter(id INTEGER PRIMARY KEY AUTOINCREMENT,y1 FLOAT NOT NULL,x1
 INSERT INTO User(password,username,nbanimals) VALUES ("pet","marie",2);
 INSERT INTO User(password,username,nbanimals) VALUES ("puppy","jacob",1);
 --Insertion de données des animaux
-INSERT INTO Animal(name,type,state,y0,x0,secuperim,owner,iddevice) VALUES ("tokyo","chien",0,48.8566,2.3522,1,1,"C5051C");
-INSERT INTO Animal(name,type,state,y0,x0,secuperim,owner,iddevice) VALUES ("chanel","chat",1,48.8765,2.3783,1,1,"C5061B");
+INSERT INTO Animal(name,type,state,y0,x0,secuperim,owner,iddevice) VALUES ("tokyo","chien",0,49.8566,2.3522,1,1,"C5051C");
+INSERT INTO Animal(name,type,state,y0,x0,secuperim,owner,iddevice) VALUES ("chanel","chat",1,49.8765,2.3783,1,1,"C5061B");
 INSERT INTO Animal(name,type,state,y0,x0,secuperim,owner,iddevice) VALUES ("franklin","chien",1,2,3,2,2,"C4181F");
 --Insertion de données de localisation
 INSERT INTO Perimeter(y1,x1,y2,x2,y3,x3) VALUES (48.8852,2.3856,48.8354,2.4055,48.9056,2.4044);
