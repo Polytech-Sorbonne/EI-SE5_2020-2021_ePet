@@ -62,8 +62,18 @@ def get_location(trame1, trame2):
     file.write(json_file)
     file.close()
 
+    #fichier pour lire la clé:
+    kapi = open("key2.txt", "r")
+    ligne = kapi.read()
+    print('ligne',ligne)
+    ligne = ligne.rstrip('\n')
+
+
+    print("classe = ", type(ligne).__name__)
+
+
     #key a remplacer par celle de Melissa dans le trello
-    url = 'https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyBmnDfpS2vwJWLvWrk6AVHLktUV3iSVD9o'
+    url = 'https://www.googleapis.com/geolocation/v1/geolocate?key='+ str(ligne)
     donnees = json.loads(json_file)
     print("donnees = ",donnees)
     print("")
