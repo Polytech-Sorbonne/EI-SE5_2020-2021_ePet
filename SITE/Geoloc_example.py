@@ -23,54 +23,62 @@ def signalStrength_formatage(strength):
     return str(strength_format)
 
 ###########   test ###########
-macAdress = []
-signalStrength = []
+def get_location(trame1, trame2):
+    macAdress = []
+    signalStrength = []
 
-trame1 = "5897BDCD9260CD00FE030000"
-trame2 = "7062B8512620CD00FE030000"
+    #trame1 = "5897BDCD9260CD00FE030000"
+    #trame2 = "7062B8512620CD00FE030000"
 
-macAdress.append(trame1[0:12])
-macAdress.append(trame2[0:12])
+    macAdress.append(trame1[0:12])
+    macAdress.append(trame2[0:12])
 
-signalStrength.append(trame1[12:14])
-signalStrength.append(trame2[12:14])
+    signalStrength.append(trame1[12:14])
+    signalStrength.append(trame2[12:14])
 
-for i in range (2):
-    print("Mac Adress : ", macAdress[i])
-    print("version formatée:", macAdress_formatage(macAdress[i]))
-    print("signal Strength:", signalStrength[i])
-    print("version formatée:", signalStrength_formatage(signalStrength[i]))
-    print("--")
-# formation du message json
-file = open("mac_adresses.json","w")
-json_file = '''{ \n"considerIp": "false",\n'''
-json_file +=''' "wifiAccessPoints": [\n'''
-json_file +='''     {\n'''
-json_file +='''         "macAddress":"''' + macAdress_formatage(macAdress[0]) + '''",\n'''
-json_file +='''         "signalStrength":''' + signalStrength_formatage(signalStrength[0]) + ''',\n'''
-json_file +='''         "signalToNoiseRatio": 0\n'''
-json_file +='''     },\n'''
-json_file +='''     {\n'''
-json_file +='''         "macAddress":"''' + macAdress_formatage(macAdress[1]) + '''",\n'''
-json_file +='''         "signalStrength":''' + signalStrength_formatage(signalStrength[1]) + ''',\n'''
-json_file +='''         "signalToNoiseRatio": 0\n'''
-json_file +='''     }\n'''
-json_file +=''' ]\n'''
-json_file +='''}\n'''
+    for i in range (2):
+        print("Mac Adress : ", macAdress[i])
+        print("version formatée:", macAdress_formatage(macAdress[i]))
+        print("signal Strength:", signalStrength[i])
+        print("version formatée:", signalStrength_formatage(signalStrength[i]))
+        print("--")
+    # formation du message json
+    file = open("mac_adresses.json","w")
+    json_file = '''{ \n"considerIp": "false",\n'''
+    json_file +=''' "wifiAccessPoints": [\n'''
+    json_file +='''     {\n'''
+    json_file +='''         "macAddress":"''' + macAdress_formatage(macAdress[0]) + '''",\n'''
+    json_file +='''         "signalStrength":''' + signalStrength_formatage(signalStrength[0]) + ''',\n'''
+    json_file +='''         "signalToNoiseRatio": 0\n'''
+    json_file +='''     },\n'''
+    json_file +='''     {\n'''
+    json_file +='''         "macAddress":"''' + macAdress_formatage(macAdress[1]) + '''",\n'''
+    json_file +='''         "signalStrength":''' + signalStrength_formatage(signalStrength[1]) + ''',\n'''
+    json_file +='''         "signalToNoiseRatio": 0\n'''
+    json_file +='''     }\n'''
+    json_file +=''' ]\n'''
+    json_file +='''}\n'''
 
-file.write(json_file)
-file.close()
+    file.write(json_file)
+    file.close()
 
-#key a remplacer par celle de Melissa dans le trello
-url = 'https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyCCTcKvwLkjGwK4P-TLDe9o2hi-9-On0NE'
-donnees = json.loads(json_file)
-print("donnees = ",donnees)
-print("")
-print(donnees["wifiAccessPoints"][0])
-donnees_json =  json.dumps(donnees)
-r = requests.post(url, data=donnees_json)
-print("reponse : ", r)
-reponse = r.json()
-print(reponse)
-print("lat = ",reponse['location']['lat'])
-print("long= ",reponse['location']['lng'])
+    #key a remplacer par celle de Melissa dans le trello
+    url = 'https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyBmnDfpS2vwJWLvWrk6AVHLktUV3iSVD9o'
+    donnees = json.loads(json_file)
+    print("donnees = ",donnees)
+    print("")
+    print(donnees["wifiAccessPoints"][0])
+    donnees_json =  json.dumps(donnees)
+    r = requests.post(url, data=donnees_json)
+    print("reponse : ", r)
+    if (str(r)=="<Response [200]>"):
+        reponse = r.json()
+        print('response',reponse)
+        print("lat = ",reponse['location']['lat'])
+        print("long= ",reponse['location']['lng'])
+        location = [reponse['location']['lat'], reponse['location']['lng']]
+
+        return location
+    else :
+        print('error')
+        return [0,0]

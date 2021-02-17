@@ -5,6 +5,7 @@ import http.server, urllib.parse, sqlite3
 import requests
 import random
 import time
+import Geoloc_example
 
 ENDPOINT = "things.ubidots.com"
 DEVICE_LABEL = "epet"
@@ -219,9 +220,19 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			loc = self.mysql.select_loc()
 
 			print("LOC:",loc)
+			#bonnes trames
+			trame1 ="5897BDCD9260CD00FE030000"
+			trame2 ="7062B8512620CD00FE030000"
 
-			y0 = loc[0]
-			x0 = loc[1]
+			#mauvaises trames
+			# trame1="8A9F6FE10E74CD0000000000"
+			# trame2="010001010100010000010000"
+
+			location = Geoloc_example.get_location(trame1,trame2)
+			print('location', location)
+
+			y0 = location[0]
+			x0 = location[1]
 
 			y1 = s[1]
 			x1 = s[2]

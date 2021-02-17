@@ -2,13 +2,13 @@
 "considerIp": "false",
  "wifiAccessPoints": [
      {
-         "macAddress":"58:97:bd:cd:92:60",
+         "macAddress":"8a:9f:6f:e1:0e:74",
          "signalStrength":-51,
          "signalToNoiseRatio": 0
      },
      {
-         "macAddress":"70:62:b8:51:26:20",
-         "signalStrength":-51,
+         "macAddress":"01:00:01:01:01:00",
+         "signalStrength":1,
          "signalToNoiseRatio": 0
      }
  ]
