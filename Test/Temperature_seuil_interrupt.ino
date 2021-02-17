@@ -17,9 +17,7 @@
 //Librairies Température
 #include "Adafruit_SHTC3.h"
 
-#define SeuilMin 37 //tests sur un mouvement sur 5 cm
-#define SeuilMax 2.5
-#define NB_SECOND 60 //75 // 1 min 15
+#define NB_SECOND 60 
 
 // Température
 int t;
@@ -54,7 +52,6 @@ void IRAM_ATTR onTimer() {
 void setup() {
   Serial.begin(115200);
   //creation du timer
-  xTaskCreate(taskOne,"taskOne",1000, NULL, 1,NULL);
   timer = timerBegin(0, 80, true);
   timerAttachInterrupt(timer, &onTimer, true);
   timerAlarmWrite(timer, NB_SECOND * 1000000, true);   // 1 000 000 ms = 1 s
@@ -69,6 +66,9 @@ void setup() {
     while (1) delay(1);
   }
   Serial.println("Found SHTC3 sensor");
+  shtc3.getEvent(&humidity, &temp); // populate temp object with fresh data
+  xTaskCreate(taskOne,"taskOne",1000, NULL, 1,NULL);
+
 }
 
 
@@ -88,8 +88,8 @@ void taskOne(void* parameter){
     Serial.print("An interrupt as occurred. Total number: ");
     Serial.println(totalInterruptCounter);
     t = convFloatToInt(tmp);
-    temp_tab[totalInterruptCounter - 2] = t;
-    if (totalInterruptCounter == 8) {
+    temp_tab[totalInterruptCounter] = t;
+    if (totalInterruptCounter == 6) {
       for (int i = 0; i < 7; i++) {
         Serial.print("Température n° "); Serial.print(i); Serial.print(": temp : "); Serial.println(temp_tab[i]);
       }
