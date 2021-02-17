@@ -1,18 +1,3 @@
-/**************************************************************************/
-/*!
-    @file     Adafruit_MMA8451.h
-    @author   K. Townsend (Adafruit Industries)
-    @license  BSD (see license.txt)
-    This is an example for the Adafruit MMA8451 Accel breakout board
-    ----> https://www.adafruit.com/products/2019
-    Adafruit invests time and resources providing this open source code,
-    please support Adafruit and open-source hardware by purchasing
-    products from Adafruit!
-    @section  HISTORY
-    v1.0  - First release
-*/
-/**************************************************************************/
-
 #include <Wire.h>
 #include <Arduino.h>
 #ifdef ARDUINO_ARCH_SAMD
@@ -23,7 +8,7 @@
 #include <WiFi.h>
 #else
 #error Wrong platform
-#endif 
+#endif
 
 #include <WifiLocation.h>
 #include <Adafruit_MMA8451.h>
@@ -34,8 +19,9 @@
 
 #define SeuilMin 37 //tests sur un mouvement sur 5 cm
 #define SeuilMax 2.5
-#define NB_SECOND 75 // 1 min 15
+#define NB_SECOND 60 //75 // 1 min 15
 
+// Température
 int t;
 
 //tableaux des températures sur 15 minutes
@@ -50,9 +36,10 @@ TwoWire I2CBME = TwoWire(0);
 hw_timer_t * timer;
 volatile int interruptCounter;
 int totalInterruptCounter;
+sensors_event_t humidity, temp;
 
 //Conversion d'un float en int
-int convFloatToInt(float x){
+int convFloatToInt(float x) {
   int integer = x * 100;
   Serial.print("Integer : ");
   Serial.println(integer);
@@ -60,25 +47,19 @@ int convFloatToInt(float x){
 }
 
 // timer routine
-void IRAM_ATTR temperature(){
-  Serial.println("temperature");  
-  sensors_event_t humidity,temp;
-  shtc3.getEvent(&humidity,&temp);// populate temp object with fresh data
-  
-  Serial.print("Temperature: "); Serial.print(temp.temperature); Serial.println(" degrees C");
-  float tmp = temp.temperature;
-  t = convFloatToInt(tmp);
+void IRAM_ATTR onTimer() {
   interruptCounter++;
 }
 
-void setup() {   
-  Serial.begin(115200);   
+void setup() {
+  Serial.begin(115200);
   //creation du timer
-  timer = timerBegin(0, 80, true);   
-  timerAttachInterrupt(timer, &temperature, true);   
+  xTaskCreate(taskOne,"taskOne",1000, NULL, 1,NULL);
+  timer = timerBegin(0, 80, true);
+  timerAttachInterrupt(timer, &onTimer, true);
   timerAlarmWrite(timer, NB_SECOND * 1000000, true);   // 1 000 000 ms = 1 s
   timerAlarmEnable(timer);
-  
+
   //desactiver bluetooth et wifi
   WiFi.mode(WIFI_OFF);
   btStop();
@@ -92,20 +73,28 @@ void setup() {
 
 
 void loop() {
-
   if (interruptCounter > 0) {
- 
     interruptCounter--;
     totalInterruptCounter++;
+    shtc3.getEvent(&humidity, &temp); // populate temp object with fresh data
+  }
+}
+
+void taskOne(void* parameter){
+  while(1){
+    //Serial.println("temperature");
+    Serial.print("Temperature: "); Serial.print(temp.temperature); Serial.println(" degrees C");
+    float tmp = temp.temperature;
     Serial.print("An interrupt as occurred. Total number: ");
     Serial.println(totalInterruptCounter);
-    Serial.print("Nombre de minutes :");Serial.println(totalInterruptCounter);
-    temp_tab[totalInterruptCounter - 1] = t;    
-    if (totalInterruptCounter == 6){ 
-      for (int i = 0; i < 7; i++){
-         Serial.print("Température n° ");Serial.print(i);Serial.print(": temp : ");Serial.println(temp_tab[i]);
+    t = convFloatToInt(tmp);
+    temp_tab[totalInterruptCounter - 2] = t;
+    if (totalInterruptCounter == 8) {
+      for (int i = 0; i < 7; i++) {
+        Serial.print("Température n° "); Serial.print(i); Serial.print(": temp : "); Serial.println(temp_tab[i]);
       }
       totalInterruptCounter = 0;
     }
+    vTaskDelay(60000);
   }
 }
