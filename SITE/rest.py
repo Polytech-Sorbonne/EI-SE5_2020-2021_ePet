@@ -283,7 +283,6 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 				print("classe = ", type(lignes).__name__)
 
 
-
 				with open('localisation_suite.html', 'r') as f:
 					my_str = my_str + f.read()
 
@@ -291,6 +290,28 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 				for i in range(len(a)):
 					my_str = my_str + '<a href="/Loc-' + str(i) + '" <button>' + a[i][0] + ' </button></a>'
 					#affichage noms des animaux
+
+				mx1 = x1-x0
+				mx2 = x2-x0
+				mx3 = x3-x0
+				my1 = y1-y0
+				my2 = y2-y0
+				my3 = y3-y0
+
+				e1 = mx1*my2 - my1*mx2
+				e2 = mx2*my3 - my2*mx3
+				e3 = mx3*my1 - my3*mx1
+
+				print("e1:",str(e1))
+				print("e2:",str(e2))
+				print("e3:",str(e3))
+
+				if ((e1 >= 0 and e2 >= 0 and e3 >= 0) or(e1 <= 0 and e2 <= 0 and e3 <= 0)):
+					print("Le point est dans le périmètre")
+
+				else:
+					print("Le point est hors du périmètre!")
+					my_str += '<br><br><br><center><p style="color:red;font-size:30px" ;>L\'animal est hors périmètre</p></center><br>'
 
 				with open('localisation_suite_2.html', 'r') as f:
 					my_str = my_str + f.read()
@@ -620,6 +641,51 @@ class MySQL():
 		print("DEVICE:", device)
 		req = "update Animal set y0 = " + str(localisation[0]) + ", x0 = " + str(localisation[1]) + " where iddevice = \"" + device +  "\";"
 		print("REQ = ", req )
+
+		secuperim = self.c.execute("select secuperim from Animal where iddevice = \"" + device + "\";").fetchall()
+		print('perimetre',secuperim)
+
+		perim = self.c.execute("select * from Perimeter where id = " + str(secuperim[0][0]) + ";").fetchall()
+		print('perim',perim)
+
+		yp = localisation[0]
+		xp = localisation[1]
+
+		y1 = perim[0][1]
+		x1 = perim[0][2]
+		y2 = perim[0][3]
+		x2 = perim[0][4]
+		y3 = perim[0][5]
+		x3 = perim[0][6]
+
+		print('y1',y1)
+		print('x1',x1)
+		print('y2',y2)
+		print('x2',x2)
+		print('y3',y3)
+		print('x3',x3)
+
+		mx1 = x1-xp
+		mx2 = x2-xp
+		mx3 = x3-xp
+		my1 = y1-yp
+		my2 = y2-yp
+		my3 = y3-yp
+
+		e1 = mx1*my2 - my1*mx2
+		e2 = mx2*my3 - my2*mx3
+		e3 = mx3*my1 - my3*mx1
+
+		print("e1:",str(e1))
+		print("e2:",str(e2))
+		print("e3:",str(e3))
+
+		if ((e1 >= 0 and e2 >= 0 and e3 >= 0) or(e1 <= 0 and e2 <= 0 and e3 <= 0)):
+			print("Le point est dans le périmètre")
+
+		else:
+			print("Le point est hors du périmètre!")
+
 		self.c.execute(req)
 		self.conn.commit()
 
