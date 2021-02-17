@@ -78,7 +78,7 @@ span.psw {
   <div class="container">
     Nom d'utilisateur ou mot de passe incorrect, veuillez r&eacute;essayer<br><br>
     <label for="uname"><b>ID</b></label>
-    <input type="text" placeholder="Enter Username" name="id" required oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+    <input type="text" placeholder="Enter Username" name="id" required oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
 
     <label for="psw"><b>Password</b></label>
     <input type="password" placeholder="Enter Password" name="password" required>
