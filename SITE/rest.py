@@ -18,6 +18,7 @@ id_animal = -1
 data1 = ""
 query1 = ""
 cpt_device = 0
+is_logged = False
 
 class MyHandler(http.server.BaseHTTPRequestHandler):
 	def __init__(self, *args, **kwargs):
@@ -26,6 +27,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 
 	def do_GET(self):
 		global id_animal
+		global is_logged
 		"""Respond to a GET request."""
 
 		if self.path == '/favicon.ico':
@@ -136,9 +138,15 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			self.send_response(200)
 			self.send_header("Content-type", "text/html")
 			self.end_headers()
-			with open('accueil.html', 'r') as f:
-				html = f.read()
-				self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
+
+			if not is_logged:
+				with open('log.html', 'r') as f:
+					html = f.read()
+					self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
+			else:
+				with open('accueil.html', 'r') as f:
+					html = f.read()
+					self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
 
 		if self.path == "/Log" :
 			self.send_response(200)
@@ -162,137 +170,141 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			self.send_response(200)
 			self.send_header("Content-type", "text/html")
 			self.end_headers()
-			try:
-				id_animal = int(self.path[6:]) + 1
 
-			except:
-				id_animal = 1
+			if not is_logged:
+				with open('log.html', 'r') as f:
+					html = f.read()
+					self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
+			else:
+				try:
+					id_animal = int(self.path[6:]) + 1
 
-
-			with open('temperature_debut.html', 'r') as f:
-				my_str = f.read()
-
-			s = self.mysql.temperature_html()
-
-			print("S")
-			print(s)
-
-			for i in range(len(s)):
-
-				my_str = my_str + "          ['"
-				print("SI = ", s[i])
-				my_str = my_str + str(s[i][0]) + "', " + str(s[i][1]) #date d'insertion et température
-				my_str = my_str + "],\n"
-
-			my_str = my_str + "]);\n"
+				except:
+					id_animal = 1
 
 
-			with open('temperature_suite.html', 'r') as f:
-				my_str = my_str + f.read()
+				with open('temperature_debut.html', 'r') as f:
+					my_str = f.read()
 
-			a = self.mysql.select_animals()
+				s = self.mysql.temperature_html()
 
-			for i in range(len(a)):
-				my_str = my_str + '<a href="/Temp-' + str(i) + '" <button>' + a[i][0] + ' </button></a>'
-				#affichage noms des animaux
+				print("S")
+				print(s)
+
+				for i in range(len(s)):
+
+					my_str = my_str + "          ['"
+					print("SI = ", s[i])
+					my_str = my_str + str(s[i][0]) + "', " + str(s[i][1]) #date d'insertion et température
+					my_str = my_str + "],\n"
+
+				my_str = my_str + "]);\n"
 
 
-			with open('temperature_fin.html', 'r') as f:
-				my_str = my_str + f.read()
+				with open('temperature_suite.html', 'r') as f:
+					my_str = my_str + f.read()
 
-			self.wfile.write(bytes(str(my_str)+'\n', 'UTF-8'))
+				a = self.mysql.select_animals()
 
-			tmp = open("affichage_temp_finale.html", "w")
-			tmp.write(my_str)
+				for i in range(len(a)):
+					my_str = my_str + '<a href="/Temp-' + str(i) + '" <button>' + a[i][0] + ' </button></a>'
+					#affichage noms des animaux
 
-		if self.path == "/select_animal":
-			self.send_response(200)
-			self.send_header("Content-type", "text/html")
-			self.end_headers()
 
-			a = self.mysql.select_animals()
-			print('a')
-			print(a)
+				with open('temperature_fin.html', 'r') as f:
+					my_str = my_str + f.read()
+
+				self.wfile.write(bytes(str(my_str)+'\n', 'UTF-8'))
+
+				tmp = open("affichage_temp_finale.html", "w")
+				tmp.write(my_str)
 
 		if self.path[0:4] == "/Loc":
 			self.send_response(200)
 			self.send_header("Content-type", "text/html")
 			self.end_headers()
 
-			try:
-				id_animal = int(self.path[5:]) + 1
+			if not is_logged:
+				with open('log.html', 'r') as f:
+					html = f.read()
+					self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
 
-			except:
-				id_animal = 1
+			else:
 
-			with open('localisation_debut.html', 'r') as f:
-				my_str = f.read()
+				try:
+					id_animal = int(self.path[5:]) + 1
 
-			s = self.mysql.localisation_html()
+				except:
+					id_animal = 1
 
-			loc = self.mysql.select_loc()
+				with open('localisation_debut.html', 'r') as f:
+					my_str = f.read()
 
-			#print("LOC:",loc)
-			##bonnes trames
-			#trame1 ="5897BDCD9260CD00FE030000"
-			#trame2 ="7062B8512620CD00FE030000"
+				s = self.mysql.localisation_html()
 
-			#mauvaises trames
-			# trame1="8A9F6FE10E74CD0000000000"
-			# trame2="010001010100010000010000"
+				loc = self.mysql.select_loc()
 
-			#location = Geoloc_example.get_location(trame1,trame2)
-			#print('location', location)
+				#print("LOC:",loc)
+				##bonnes trames
+				#trame1 ="5897BDCD9260CD00FE030000"
+				#trame2 ="7062B8512620CD00FE030000"
 
-			#y0 = location[0]
-			#x0 = location[1]
+				#mauvaises trames
+				# trame1="8A9F6FE10E74CD0000000000"
+				# trame2="010001010100010000010000"
 
-			y0 = loc[0]
-			x0 = loc[1]
+				#location = Geoloc_example.get_location(trame1,trame2)
+				#print('location', location)
 
-			y1 = s[1]
-			x1 = s[2]
+				#y0 = location[0]
+				#x0 = location[1]
 
-			y2 = s[3]
-			x2 = s[4]
+				y0 = loc[0]
+				x0 = loc[1]
 
-			y3 = s[5]
-			x3 = s[6]
+				y1 = s[1]
+				x1 = s[2]
 
+				y2 = s[3]
+				x2 = s[4]
 
-			long = str(x0)
-			lat = str(y0)
-			api = open("key.txt", "r")
-			lignes = api.read()
-			print('lignes',lignes)
-			lignes = lignes.rstrip('\n')
-
-
-			print("classe = ", type(lignes).__name__)
+				y3 = s[5]
+				x3 = s[6]
 
 
-
-			with open('localisation_suite.html', 'r') as f:
-				my_str = my_str + f.read()
-
-			a = self.mysql.select_animals()
-			for i in range(len(a)):
-				my_str = my_str + '<a href="/Loc-' + str(i) + '" <button>' + a[i][0] + ' </button></a>'
-				#affichage noms des animaux
-
-			with open('localisation_suite_2.html', 'r') as f:
-				my_str = my_str + f.read()
-
-			my_str += lat + "," + long + "], 11);\nL.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=" +str(lignes)+"', {\n\tmaxZoom: 18,\n\tattribution: 'Map data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, ' + 'Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>',\n\tid: 'mapbox/streets-v11',\n\ttileSize: 512,\n\tzoomOffset: -1\n}).addTo(mymap);\nL.marker([" + lat + "," + long + "]).addTo(mymap)\nL.polygon([[" + str(y1) + "," + str(x1) + "],[" + str(y2) + "," + str(x2) + "],[" + str(y3) + "," + str(x3) + "]]).addTo(mymap);"
+				long = str(x0)
+				lat = str(y0)
+				api = open("key.txt", "r")
+				lignes = api.read()
+				print('lignes',lignes)
+				lignes = lignes.rstrip('\n')
 
 
-			with open('localisation_fin.html', 'r') as f:
-				my_str += f.read()
+				print("classe = ", type(lignes).__name__)
 
-			self.wfile.write(bytes(str(my_str)+'\n', 'UTF-8'))
 
-			tmp = open("config_test.html", "w")
-			tmp.write(my_str)
+
+				with open('localisation_suite.html', 'r') as f:
+					my_str = my_str + f.read()
+
+				a = self.mysql.select_animals()
+				for i in range(len(a)):
+					my_str = my_str + '<a href="/Loc-' + str(i) + '" <button>' + a[i][0] + ' </button></a>'
+					#affichage noms des animaux
+
+				with open('localisation_suite_2.html', 'r') as f:
+					my_str = my_str + f.read()
+
+				my_str += lat + "," + long + "], 11);\nL.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=" +str(lignes)+"', {\n\tmaxZoom: 18,\n\tattribution: 'Map data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, ' + 'Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>',\n\tid: 'mapbox/streets-v11',\n\ttileSize: 512,\n\tzoomOffset: -1\n}).addTo(mymap);\nL.marker([" + lat + "," + long + "]).addTo(mymap)\nL.polygon([[" + str(y1) + "," + str(x1) + "],[" + str(y2) + "," + str(x2) + "],[" + str(y3) + "," + str(x3) + "]]).addTo(mymap);"
+
+
+				with open('localisation_fin.html', 'r') as f:
+					my_str += f.read()
+
+				self.wfile.write(bytes(str(my_str)+'\n', 'UTF-8'))
+
+				tmp = open("config_test.html", "w")
+				tmp.write(my_str)
 
 
 
@@ -304,6 +316,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 		global data1
 		global query1
 		global cpt_device
+		global is_logged
 		# """Respond to a POST request."""
 		# res = urllib.parse.urlparse(self.path)
 		# query = urllib.parse.parse_qs(res.query)
@@ -337,6 +350,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 					if (rep[i][1] == query['password'][0]):
 						print('id et mdp identiques')
 						valide = True
+						is_logged = True
 						break
 				else:
 					print(int(rep[i][0]), " différent de ", int(query['id'][0]))
@@ -352,6 +366,14 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 				with open('accueil.html', 'r') as f:
 					html = f.read()
 					self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
+			else:
+				self.send_response(200)
+				self.send_header("Content-type", "text/html")
+				self.end_headers()
+				with open('log-error.html', 'r') as f:
+					html = f.read()
+					self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
+
 
 		if self.path[0:7] =="/device":
 			print(self.path)
@@ -637,8 +659,6 @@ def post_var(payload, url=ENDPOINT, device=DEVICE_LABEL, token=TOKEN):
     except Exception as e:
         print("[ERROR] Error posting, details: {}".format(e))
 
-    except Exception as e:
-        print("[ERROR] Error posting, details: {}".format(e))
 
 
 def twos_complement(hexstr,bits):
