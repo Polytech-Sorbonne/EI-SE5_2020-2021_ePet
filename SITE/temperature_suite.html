@@ -1,14 +1,12 @@
 
-        var options = {
-          title: 'Évolution de la température',
-          hAxis: {title: 'Date heure',  titleTextStyle: {color: '#333'}},
-          vAxis: {minValue: 0}
-        };
+      var table = new google.visualization.Table(document.getElementById('chart_div'));
+      table.draw(data, {showRowNumber: true, width: '60%', height: '60%'});
 
-        var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
-
-        chart.draw(data, options);
-      }
+      google.visualization.events.addListener(table, 'select', function() {
+        var row = table.getSelection()[0].row;
+        alert('You selected ' + data.getValue(row, 0));
+      });
+    }
 
     </script>
 </head>

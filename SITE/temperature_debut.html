@@ -116,8 +116,9 @@
   </style>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script type="text/javascript">
-    google.charts.load('current', {'packages':['corechart']});
+    google.charts.load('current', {'packages':['table','corechart']});
     google.charts.setOnLoadCallback(drawChart);
       function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-          ['Date heure', 'Température'],
+        var data = new google.visualization.DataTable();
+        data.addColumn('number', 'Température');
+        data.addColumn('string', 'Date');

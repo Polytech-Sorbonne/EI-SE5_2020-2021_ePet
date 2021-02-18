@@ -157,14 +157,12 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 				print("S")
 				print(s)
 
+				my_str += "\t\t\t\t\tdata.addRows(" + str(len(s)) + ");"
+
 				for i in range(len(s)):
 
-					my_str = my_str + "          ['"
-					print("SI = ", s[i])
-					my_str = my_str + str(s[i][0]) + "', " + str(s[i][1]) #date d'insertion et température
-					my_str = my_str + "],\n"
-
-				my_str = my_str + "]);\n"
+					my_str += "\n\t\t\t\tdata.setCell(" + str(i) + ", 0, '" + str(s[i][1]) + "');"
+					my_str += "\n\t\t\t\tdata.setCell(" + str(i) + ", 1, '" + str(s[i][0]) + "');"
 
 
 				with open('temperature_suite.html', 'r') as f:

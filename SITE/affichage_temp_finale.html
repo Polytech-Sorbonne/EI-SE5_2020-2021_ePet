@@ -116,28 +116,31 @@
   </style>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script type="text/javascript">
-    google.charts.load('current', {'packages':['corechart']});
+    google.charts.load('current', {'packages':['table','corechart']});
     google.charts.setOnLoadCallback(drawChart);
       function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-          ['Date heure', 'Température'],
-          ['2021-02-17 10:10:44', 38.5],
-          ['2021-02-17 10:10:44', 39.5],
-          ['2021-02-17 10:10:44', 38.9],
-          ['2021-02-17 10:10:44', 38.8],
-          ['2021-02-17 10:10:44', 39.3],
-]);
+        var data = new google.visualization.DataTable();
+        data.addColumn('number', 'Température');
+        data.addColumn('string', 'Date');
+					data.addRows(5);
+				data.setCell(0, 0, '38.5');
+				data.setCell(0, 1, '2021-02-17 10:10:44');
+				data.setCell(1, 0, '39.5');
+				data.setCell(1, 1, '2021-02-17 10:10:44');
+				data.setCell(2, 0, '38.9');
+				data.setCell(2, 1, '2021-02-17 10:10:44');
+				data.setCell(3, 0, '38.8');
+				data.setCell(3, 1, '2021-02-17 10:10:44');
+				data.setCell(4, 0, '39.3');
+				data.setCell(4, 1, '2021-02-17 10:10:44');
+      var table = new google.visualization.Table(document.getElementById('chart_div'));
+      table.draw(data, {showRowNumber: true, width: '60%', height: '60%'});
 
-        var options = {
-          title: 'Évolution de la température',
-          hAxis: {title: 'Date heure',  titleTextStyle: {color: '#333'}},
-          vAxis: {minValue: 0}
-        };
-
-        var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
-
-        chart.draw(data, options);
-      }
+      google.visualization.events.addListener(table, 'select', function() {
+        var row = table.getSelection()[0].row;
+        alert('You selected ' + data.getValue(row, 0));
+      });
+    }
 
     </script>
 </head>
