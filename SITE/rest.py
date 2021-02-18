@@ -149,7 +149,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 					html = f.read()
 					self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
 
-		if self.path == "/Log" :
+		if self.path == "/Log" or self.path == "/" or self.path == "" :
 			self.send_response(200)
 			self.send_header("Content-type", "text/html")
 			self.end_headers()
