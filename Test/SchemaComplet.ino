@@ -22,8 +22,8 @@
 #define DELAY_TASK 60000 / 15
 
 //Accelerometre
-#define SEUILX 2.5 
-#define SEUILY 2.5
+#define SEUILX 1.3 
+#define SEUILY 1.3
 
 //seuils sur X et Y accumulés pendant 15 minutes_acc
 #define Xaddseuil 10
@@ -429,8 +429,9 @@ void detection_wifi(){
           id_add.concat(String(bssid2[j],HEX));
         }
         Serial.print("hex version : ");
-        Serial.println(bssid2[j],HEX);
+        Serial.print(bssid2[j],HEX);
       }
+      Serial.println("");
       Serial.print("Id adresse MAC : ");
       Serial.println(id_add);
       
@@ -481,7 +482,7 @@ void taskOne(void* parameter){
       if (abs(diffX) > SEUILX)
       {
         countX ++;
-        Serial.println("Mouvement sur X detecte");
+        Serial.println("! ! Mouvement sur X detecte ! !");
         mouvX[minutes_acc] = 1; 
       } 
       else
@@ -491,7 +492,7 @@ void taskOne(void* parameter){
       if (abs(diffY) > SEUILY)
       {
         countY ++;
-        Serial.println("Mouvement sur Y detecte");
+        Serial.println("! ! Mouvement sur Y detecte ! !");
         mouvY[minutes_acc] = 1; 
       } 
       else
@@ -504,6 +505,12 @@ void taskOne(void* parameter){
       //remise à zero des compteurs de X et Y
       if (minutes_acc == 15 )
       {
+        for (int i = 0; i < 15; i++)
+        {
+          Serial.print(i);Serial.print("mouv sur X : ");Serial.println(mouvX[i]);
+          Serial.print(i);Serial.print("mouv sur Y : ");Serial.println(mouvY[i]);
+        }
+        
         countX = 0;
         countY = 0;
         minutes_acc = 0 ;
@@ -601,7 +608,7 @@ void format_message(){
 
   // Détermination des cas
   int cas = testCas();
-  
+  Serial.print("-- on est dans le cas n° ");Serial.println(cas);
   switch(cas){
     
     case 0: // Température normal & aucun mouvement
@@ -609,6 +616,7 @@ void format_message(){
       
     case 1: // Température anormal & aucun mouvement
       convByteToCharTemp(temp1, temp1_trad);
+      strcpy(mess1, "00000000000000");
       strcat(mess1, temp1_trad);
       strcat(mess1, "06");      
       break;
