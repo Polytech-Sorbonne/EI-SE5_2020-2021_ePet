@@ -552,7 +552,7 @@ class MySQL():
 
 
 	def insert_temp(self,device,temp):
-		req = "select owner, iddevice from Animal where iddevice = " + device + ";"
+		req = "select owner, iddevice from Animal where iddevice = \"" + device + "\";"
 		print("REQ1 = ", req )
 		liste_animaux = self.c.execute(req).fetchall()
 		rang = 0
