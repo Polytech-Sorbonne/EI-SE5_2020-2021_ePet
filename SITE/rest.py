@@ -366,13 +366,13 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 				print(query['data'])
 
 				data = str(query['data'])
-				loc_mode = data[20:22]
+				loc_mode = data[18:20]
 				print("LOC_MODE:",loc_mode)
 
 				device = str(query['device'])
 
 				data1 = str(query1['data'])
-				loc_mode1 = data1[20:22]
+				loc_mode1 = data1[18:20]
 				print("LOC_MODE1:",loc_mode1)
 
 				device1 = str(query1['device'])
