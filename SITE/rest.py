@@ -312,7 +312,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 
 				else:
 					print("Le point est hors du périmètre!")
-					my_str += '<br><br><br><center><p style="color:red;font-size:30px" ;>L\'animal est hors périmètre</p></center><br>'
+					my_str += '<br><br><br><center><p style="color:red;font-size:30px" ;>Sortie du périmètre détectée!</p></center><br>'
 
 				with open('localisation_suite_2.html', 'r') as f:
 					my_str = my_str + f.read()
