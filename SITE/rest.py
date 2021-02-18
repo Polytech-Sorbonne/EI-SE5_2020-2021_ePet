@@ -452,12 +452,12 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 				elif(loc_mode1=="05"):
 					disty = twos_complement(query1['data'][0:12],48)
 					temp = twos_complement(['data'][14:18],16)
-					print('disty',query['data'][0:2]+':'+query['data'][2:4]+':'+query['data'][4:6]+':'+query['data'][6:8]+':'+query['data'][8:10]+':'+query['data'][10:12])
+					print('disty',query1['data'][0:2]+':'+query1['data'][2:4]+':'+query1['data'][4:6]+':'+query1['data'][6:8]+':'+query1['data'][8:10]+':'+query1['data'][10:12])
 					temp = float(temp/100)
 					print('temp',temp)
 					self.mysql.insert_temp(device,temp)
 				elif(loc_mode1=="06"):
-					temp = twos_complement(query['data'][14:18],16)
+					temp = twos_complement(query1['data'][14:18],16)
 					temp = float(temp/100)
 					print('temp',temp)
 					self.mysql.insert_temp(device,temp)
