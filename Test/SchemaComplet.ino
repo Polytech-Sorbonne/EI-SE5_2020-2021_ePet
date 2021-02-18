@@ -616,7 +616,7 @@ void format_message(){
       
     case 1: // Température anormal & aucun mouvement
       convByteToCharTemp(temp1, temp1_trad);
-      strcpy(mess1, "00000000000000");
+      strcat(mess1, "00000000000000");
       strcat(mess1, temp1_trad);
       strcat(mess1, "06");      
       break;
