@@ -399,7 +399,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 					temp = float(temp/100)
 					print('temp',temp)
 					position = Geoloc_example.get_location(data,data1)
-					self.mysql.update_localisation(self,device,position)
+					self.mysql.update_localisation(device,position)
 					self.mysql.insert_temp(device,temp)
 				elif(loc_mode=="04"):
 					distx = twos_complement(query['data'][0:12],48)
