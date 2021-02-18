@@ -38,37 +38,11 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 		rep = ""
 		#rep = self.mysql.select(res.path)
 
-		"""if self.path == "/User":
-			rep = self.mysql.select_user(res.path)
-		"""
-
-		"""if len(rep) > 0:
-			self.mysql.send_data()
-
-			self.send_response(200)
-			self.send_header("Content-type", "text/html")
-			self.end_headers()
-			self.wfile.write(bytes(str(rep)+'\n', 'UTF-8'))
-		else:
-			self.send_response(404)
-			self.send_header("Content-type", "text/html")
-			self.end_headers()
-		"""
-
+		 #test dans le navigateur
 		if self.path[0:7] =="/device":
-			print('aaa')
 			#res = urllib.parse.urlparse(self.path)
 			#query = urllib.parse.parse_qs(res.query)
-			"""
-			print("query")
-			print(query)
-			print("device")
-			print(query['device'])
-			print("time")
-			print(query['time'])
-			print("data")
-			print(query['data'])
-			"""
+
 			tab = []
 			tab.append("8A9F6FE10E74CD0000000000")
 			tab.append("010001010100010000010000")
@@ -83,6 +57,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			trame2 ="7062B8512620CD00FE030000"
 
 			#loc_mode= query['data'][0][18:20]
+			#récupération de données selon la valeur du loc_mode
 			for i in range(0,6):
 				data = tab[i]
 				loc_mode = data[18:20]
@@ -140,7 +115,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			self.send_header("Content-type", "text/html")
 			self.end_headers()
 
-			if not is_logged:
+			if not is_logged:#la page d'accueil qui renvoie sur log si l'utilisateur s'est pas connecté
 				with open('log.html', 'r') as f:
 					html = f.read()
 					self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
@@ -156,23 +131,13 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			with open('log.html', 'r') as f:
 				html = f.read()
 				self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
-				#res = urllib.parse.urlparse(self.path)
-				#rep = self.mysql.select_user(res.path)
-				#print('rep')
-
-				#for i in range(len(rep)):
-					#print(rep[i][2]) #le nom du User
-					#print(rep[i][1]) #le mot de passe correspondant
-
-
-
 
 		if self.path[0:5] == "/Temp":
 			self.send_response(200)
 			self.send_header("Content-type", "text/html")
 			self.end_headers()
 
-			if not is_logged:
+			if not is_logged:#la page de température qui renvoie sur log si l'utilisateur s'est pas connecté
 				with open('log.html', 'r') as f:
 					html = f.read()
 					self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
@@ -225,7 +190,7 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 			self.send_header("Content-type", "text/html")
 			self.end_headers()
 
-			if not is_logged:
+			if not is_logged:#la page de localisation qui renvoie sur log si l'utilisateur s'est pas connecté
 				with open('log.html', 'r') as f:
 					html = f.read()
 					self.wfile.write(bytes(str(html)+'\n', 'UTF-8'))
@@ -244,21 +209,6 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 				s = self.mysql.localisation_html()
 
 				loc = self.mysql.select_loc()
-
-				#print("LOC:",loc)
-				##bonnes trames
-				#trame1 ="5897BDCD9260CD00FE030000"
-				#trame2 ="7062B8512620CD00FE030000"
-
-				#mauvaises trames
-				# trame1="8A9F6FE10E74CD0000000000"
-				# trame2="010001010100010000010000"
-
-				#location = Geoloc_example.get_location(trame1,trame2)
-				#print('location', location)
-
-				#y0 = location[0]
-				#x0 = location[1]
 
 				y0 = loc[0]
 				x0 = loc[1]
@@ -288,10 +238,11 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 					my_str = my_str + f.read()
 
 				a = self.mysql.select_animals()
+				#affichage noms des animaux
 				for i in range(len(a)):
 					my_str = my_str + '<a href="/Loc-' + str(i) + '" <button>' + a[i][0] + ' </button></a>'
-					#affichage noms des animaux
 
+				#test du périmètre
 				mx1 = x1-x0
 				mx2 = x2-x0
 				mx3 = x3-x0
@@ -329,9 +280,6 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 				tmp.write(my_str)
 
 
-
-
-
 	def do_POST(self):
 		global id_utilisateur
 		global id_animal
@@ -359,11 +307,6 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 
 
 			valide = False
-			#print('rep[0][0]')
-			#print(rep[0][0])
-			#print('rep')
-			#print (rep)
-			#print (rep[0][1])
 
 			for i in range(len(rep)):
 
@@ -668,6 +611,7 @@ class MySQL():
 		print('x2',x2)
 		print('y3',y3)
 		print('x3',x3)
+		#calcul des vecteurs pour voir si l'animal est hors périmètre
 
 		mx1 = x1-xp
 		mx2 = x2-xp
