@@ -618,7 +618,7 @@ void format_message(){
       convByteToCharTemp(temp1, temp1_trad);
       strcat(mess1, "00000000000000");
       strcat(mess1, temp1_trad);
-      strcat(mess1, "06");      
+      strcat(mess1, "06\r\n");      
       break;
       
     case 2: // Température normal & mouvement présent & pas chgmt localisation
@@ -629,11 +629,11 @@ void format_message(){
       strcat(mess1, x_trad);
       strcat(mess2, y_trad);
 
-      strcat(mess1, "00000000000000");
-      strcat(mess2, "00000000000000");
+      //strcat(mess1, "00000000000000");
+      //strcat(mess2, "00000000000000");
 
-      strcat(mess1, "01");
-      strcat(mess2, "02");    
+      strcat(mess1, "01\r\n");
+      strcat(mess2, "02\r\n");    
       break;
       
     case 3: // Température anormal & mouvement présent & pas chgmt localisation
@@ -653,8 +653,8 @@ void format_message(){
       strcat(mess1, temp1_trad);
       strcat(mess2, temp2_trad);
 
-      strcat(mess1, "04");
-      strcat(mess2, "05");
+      strcat(mess1, "04\r\n");
+      strcat(mess2, "05\r\n");
       break;
       
     case 4: // Température normal & mouvement présent & chgmt localisation
@@ -665,8 +665,8 @@ void format_message(){
       strcat(mess1, bssid1_trad);
       strcat(mess2, bssid2_trad);
 
-      strcat(mess1, "00");
-      strcat(mess2, "00");
+      strcat(mess1, "00\r\n");
+      strcat(mess2, "00\r\n");
 
       for(int i = 0; i < 6; i++){
         bssid1_prec[i] = bssid1[i];
@@ -688,8 +688,8 @@ void format_message(){
       strcat(mess1, temp1_trad);
       strcat(mess2, temp2_trad);
 
-      strcat(mess1, "03");
-      strcat(mess2, "03");
+      strcat(mess1, "03\r\n");
+      strcat(mess2, "03\r\n");
       
       for(int i = 0; i < 6; i++){
         bssid1_prec[i] = bssid1[i];
