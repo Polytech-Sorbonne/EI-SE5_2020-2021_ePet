@@ -6,6 +6,7 @@ import requests
 import random
 import time
 import Geoloc_example
+import json
 
 ENDPOINT = "things.ubidots.com"
 DEVICE_LABEL = "epet"
@@ -397,9 +398,12 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 
 
 		if self.path[0:7] =="/device":
-			print(self.path)
-			res = urllib.parse.urlparse(self.path)
-			query = urllib.parse.parse_qs(res.query)
+			#print(self.path)
+			#res = urllib.parse.urlparse(self.path)
+			#query = urllib.parse.parse_qs(res.query)
+
+			query = json.loads(self.rfile.read(100))
+			print(query)
 
 			if cpt_device == 0:
 				data1 = query['data']
@@ -424,13 +428,13 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 				loc_mode = data[20:22]
 				print("LOC_MODE:",loc_mode)
 
-				device = str(query['device'][0])
+				device = str(query['device'])
 
 				data1 = str(query1['data'])
 				loc_mode1 = data1[20:22]
 				print("LOC_MODE1:",loc_mode1)
 
-				device1 = str(query1['device'][0])
+				device1 = str(query1['device'])
 
 
 				if(loc_mode=="00"):
@@ -439,17 +443,17 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 					# print('rssi',query['data'][0][12:14])
 					# print('bssid',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
 					position = Geoloc_example.get_location(data,data1)
-					self.mysql.update_localisation(self,device,position)
+					self.mysql.update_localisation(device,position)
 				elif(loc_mode=="01"):
-					distx = twos_complement(query['data'][0][0:12],48)
-					print('distx',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+					distx = twos_complement(query['data'][0:12],48)
+					print('distx',query['data'][0:2]+':'+query['data'][2:4]+':'+query['data'][4:6]+':'+query['data'][6:8]+':'+query['data'][8:10]+':'+query['data'][10:12])
 				elif(loc_mode=="02"):
-					disty = twos_complement(query['data'][0][0:12],48)
-					print('disty',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+					disty = twos_complement(query['data'][0:12],48)
+					print('disty',query['data'][0:2]+':'+query['data'][2:4]+':'+query['data'][4:6]+':'+query['data'][6:8]+':'+query['data'][8:10]+':'+query['data'][10:12])
 				elif(loc_mode=="03"):
 					#bssid = twos_complement(query['data'][0][0:12],48)
 					#rssi = twos_complement(query['data'][0][12:14],8)
-					temp = twos_complement(query['data'][0][14:18],16)
+					temp = twos_complement(query['data'][14:18],16)
 					#print('bssid',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
 					temp = float(temp/100)
 					print('temp',temp)
@@ -457,21 +461,21 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 					self.mysql.update_localisation(self,device,position)
 					self.mysql.insert_temp(device,temp)
 				elif(loc_mode=="04"):
-					distx = twos_complement(query['data'][0][0:12],48)
-					temp = twos_complement(query['data'][0][14:18],16)
-					print('distx',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+					distx = twos_complement(query['data'][0:12],48)
+					temp = twos_complement(query['data'][14:18],16)
+					print('distx',query['data'][0:2]+':'+query['data'][2:4]+':'+query['data'][4:6]+':'+query['data'][6:8]+':'+query['data'][8:10]+':'+query['data'][10:12])
 					temp = float(temp/100)
 					print('temp',temp)
 					self.mysql.insert_temp(device,temp)
 				elif(loc_mode=="05"):
-					disty = twos_complement(query['data'][0][0:12],48)
-					temp = twos_complement(query['data'][0][14:18],16)
-					print('disty',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+					disty = twos_complement(query['data'][0:12],48)
+					temp = twos_complement(query['data'][14:18],16)
+					print('disty',query['data'][0:2]+':'+query['data'][2:4]+':'+query['data'][4:6]+':'+query['data'][6:8]+':'+query['data'][8:10]+':'+query['data'][10:12])
 					temp = float(temp/100)
 					print('temp',temp)
 					self.mysql.insert_temp(device,temp)
 				elif(loc_mode=="06"):
-					temp = twos_complement(query['data'][0][14:18],16)
+					temp = twos_complement(query['data'][14:18],16)
 					temp = float(temp/100)
 					print('temp',temp)
 					self.mysql.insert_temp(device,temp)
@@ -484,35 +488,35 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 					#print('bssid',query1['data'][0][0:2]+':'+query1['data'][0][2:4]+':'+query1['data'][0][4:6]+':'+query1['data'][0][6:8]+':'+query1['data'][0][8:10]+':'+query1['data'][0][10:12])
 					pass
 				elif(loc_mode1=="01"):
-					distx = twos_complement(query1['data'][0][0:12],48)
-					print('distx',query1['data'][0][0:2]+':'+query1['data'][0][2:4]+':'+query1['data'][0][4:6]+':'+query1['data'][0][6:8]+':'+query1['data'][0][8:10]+':'+query1['data'][0][10:12])
+					distx = twos_complement(query1['data'][0:12],48)
+					print('distx',query1['data'][0:2]+':'+query1['data'][2:4]+':'+query1['data'][4:6]+':'+query1['data'][6:8]+':'+query1['data'][8:10]+':'+query1['data'][10:12])
 				elif(loc_mode1=="02"):
-					disty = twos_complement(query1['data'][0][0:12],48)
-					print('disty',query1['data'][0][0:2]+':'+query1['data'][0][2:4]+':'+query1['data'][0][4:6]+':'+query1['data'][0][6:8]+':'+query1['data'][0][8:10]+':'+query1['data'][0][10:12])
+					disty = twos_complement(query1['data'][0:12],48)
+					print('disty',query1['data'][0:2]+':'+query1['data'][2:4]+':'+query1['data'][4:6]+':'+query1['data'][6:8]+':'+query1['data'][8:10]+':'+query1['data'][10:12])
 				elif(loc_mode1=="03"):
 					#bssid = twos_complement(query1['data'][0][0:12],48)
 					#rssi = twos_complement(query1['data'][0][12:14],8)
-					temp = twos_complement(query1['data'][0][14:18],16)
+					temp = twos_complement(query1['data'][14:18],16)
 					#print('bssid',query1['data'][0][0:2]+':'+query1['data'][0][2:4]+':'+query1['data'][0][4:6]+':'+query1['data'][0][6:8]+':'+query1['data'][0][8:10]+':'+query1['data'][0][10:12])
 					temp = float(temp/100)
 					print('temp',temp)
 					self.mysql.insert_temp(device,temp)
 				elif(loc_mode1=="04"):
-					distx = twos_complement(query1['data'][0][0:12],48)
-					temp = twos_complement(query1['data'][0][14:18],16)
-					print('distx',query1['data'][0][0:2]+':'+query1['data'][0][2:4]+':'+query1['data'][0][4:6]+':'+query1['data'][0][6:8]+':'+query1['data'][0][8:10]+':'+query1['data'][0][10:12])
+					distx = twos_complement(query1['data'][0:12],48)
+					temp = twos_complement(query1['data'][14:18],16)
+					print('distx',query1['data'][0:2]+':'+query1['data'][2:4]+':'+query1['data'][4:6]+':'+query1['data'][6:8]+':'+query1['data'][8:10]+':'+query1['data'][10:12])
 					temp = float(temp/100)
 					print('temp',temp)
 					self.mysql.insert_temp(device,temp)
 				elif(loc_mode1=="05"):
-					disty = twos_complement(query1['data'][0][0:12],48)
-					temp = twos_complement(['data'][0][14:18],16)
-					print('disty',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
+					disty = twos_complement(query1['data'][0:12],48)
+					temp = twos_complement(['data'][14:18],16)
+					print('disty',query['data'][0:2]+':'+query['data'][2:4]+':'+query['data'][4:6]+':'+query['data'][6:8]+':'+query['data'][8:10]+':'+query['data'][10:12])
 					temp = float(temp/100)
 					print('temp',temp)
 					self.mysql.insert_temp(device,temp)
 				elif(loc_mode1=="06"):
-					temp = twos_complement(query['data'][0][14:18],16)
+					temp = twos_complement(query['data'][14:18],16)
 					temp = float(temp/100)
 					print('temp',temp)
 					self.mysql.insert_temp(device,temp)

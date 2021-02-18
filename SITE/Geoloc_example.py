@@ -27,6 +27,8 @@ def get_location(trame1, trame2):
     macAdress = []
     signalStrength = []
 
+
+    #trames de test
     #trame1 = "5897BDCD9260CD00FE030000"
     #trame2 = "7062B8512620CD00FE030000"
 
@@ -79,6 +81,7 @@ def get_location(trame1, trame2):
     print("")
     print(donnees["wifiAccessPoints"][0])
     donnees_json =  json.dumps(donnees)
+    print("Donnees JSON", donnees_json)
     r = requests.post(url, data=donnees_json)
     print("reponse : ", r)
     if (str(r)=="<Response [200]>"):

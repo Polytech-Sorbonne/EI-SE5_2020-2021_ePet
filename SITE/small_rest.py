@@ -27,21 +27,22 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
         # """Respond to a POST request."""
 
 		if self.path == "/device":
-		    print("request line",self.requestline)
-		    print("headers",self.headers)
-		    res = urllib.parse.urlparse(self.path)
-		    query = urllib.parse.parse_qs(res.query)
-		    print("res = ",res)
-		    print("query = ",query)
-		    print("reponse : ",json.loads(self.rfile.read(100)))
-		    reponse = json.loads(self.rfile.read(100))
-		    print("data = ",reponse['data'])
-		    print("device = ",reponse['device'])
-		    print("time = ",reponse['time'])
+			print("request line",self.requestline)
+			print("headers",self.headers)
+			res = urllib.parse.urlparse(self.path)
+			query = urllib.parse.parse_qs(res.query)
+			print("res = ",res)
+			print("query = ",query)
+			#print("reponse : ",json.loads(self.rfile.read(100)))
+			reponse = json.loads(self.rfile.read(100))
+			print("reponse : ", reponse)
+			print("data = ",reponse['data'])
+			print("device = ",reponse['device'])
+			print("time = ",reponse['time'])
 
-		    self.send_response(200)
-		    self.send_header("Content-type", "text/html")
-		    self.end_headers()
+			self.send_response(200)
+			self.send_header("Content-type", "text/html")
+			self.end_headers()
 
 
 
