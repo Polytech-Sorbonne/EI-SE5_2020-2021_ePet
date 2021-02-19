@@ -379,12 +379,22 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 
 
 				if(loc_mode=="00"):
+					if cpt_device == 0:
+						data1 = query['data']
+						query1 = query
+
+					cpt_device += 1
+
+					if cpt_device == 2:
+
+						cpt_device = 0
 					# bssid = twos_complement(query['data'][0][0:12],48)
 					# rssi = twos_complement(query['data'][0][12:14],8)
 					# print('rssi',query['data'][0][12:14])
 					# print('bssid',query['data'][0][0:2]+':'+query['data'][0][2:4]+':'+query['data'][0][4:6]+':'+query['data'][0][6:8]+':'+query['data'][0][8:10]+':'+query['data'][0][10:12])
 					position = Geoloc_example.get_location(data,data1)
-					self.mysql.update_localisation(device,position)
+					if (position != [0,0]) :
+						self.mysql.update_localisation(device,position)
 				elif(loc_mode=="01"):
 					distx = twos_complement(query['data'][0:12],48)
 					print('distx',query['data'][0:2]+':'+query['data'][2:4]+':'+query['data'][4:6]+':'+query['data'][6:8]+':'+query['data'][8:10]+':'+query['data'][10:12])
@@ -392,6 +402,15 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 					disty = twos_complement(query['data'][0:12],48)
 					print('disty',query['data'][0:2]+':'+query['data'][2:4]+':'+query['data'][4:6]+':'+query['data'][6:8]+':'+query['data'][8:10]+':'+query['data'][10:12])
 				elif(loc_mode=="03"):
+					if cpt_device == 0:
+						data1 = query['data']
+						query1 = query
+
+					cpt_device += 1
+
+					if cpt_device == 2:
+
+						cpt_device = 0
 					#bssid = twos_complement(query['data'][0][0:12],48)
 					#rssi = twos_complement(query['data'][0][12:14],8)
 					temp = twos_complement(query['data'][14:18],16)
@@ -399,7 +418,8 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
 					temp = float(temp/100)
 					print('temp',temp)
 					position = Geoloc_example.get_location(data,data1)
-					self.mysql.update_localisation(device,position)
+					if (position != [0,0] ) :
+						self.mysql.update_localisation(device,position)
 					self.mysql.insert_temp(device,temp)
 				elif(loc_mode=="04"):
 					distx = twos_complement(query['data'][0:12],48)
