@@ -1,0 +1,15 @@
+{ 
+"considerIp": "false",
+ "wifiAccessPoints": [
+     {
+         "macAddress":"58:97:bd:cd:92:60",
+         "signalStrength":-51,
+         "signalToNoiseRatio": 0
+     },
+     {
+         "macAddress":"58:97:bd:cd:92:60",
+         "signalStrength":-51,
+         "signalToNoiseRatio": 0
+     }
+ ]
+}

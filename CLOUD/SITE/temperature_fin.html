@@ -1,0 +1,42 @@
+
+
+  </div>
+
+  <div class="container">
+  <br>
+  <br>
+  <br>
+    <div class="row">
+      <div class="column">
+      <div id="chart_div" style="width: device-width; height: 500px;"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+
+    window.onresize = ajuster;
+
+    function ajuster() {
+        drawChart()
+    }
+
+    function charger_accueil() {
+          location.replace("./Accueil")
+    }
+    function charger_localisation() {
+          location.replace("./Loc")
+    }
+    function charger_temperature() {
+          location.replace("./Temp")
+    }
+    function charger_github() {
+      var win = window.open("https://github.com/Polytech-Sorbonne/EI-SE5_2020-2021_ePet", '_blank');
+      win.focus();
+    }
+
+  </script>
+
+</body>
+</html>

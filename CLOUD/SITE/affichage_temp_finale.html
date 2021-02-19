@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Température</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <style>
+    body {margin:0;font-family:Arial}
+
+    body, html {
+      height: 100%;
+      margin: 0;
+    }
+
+
+    @media screen and (min-width: 601px) and (min-height: 601px) {
+      div.custom-text {
+        font-size: 25px;
+      }
+      .custom-text h1 {
+        font-size: 70px;
+      }
+      .custom-image {
+        height: 25%;
+      }
+    }
+
+    @media screen and (max-width: 600px) {
+      div.custom-text {
+        font-size: 18px;
+      }
+      .custom-text h1 {
+        font-size: 40px;
+      }
+
+      .custom-image {
+        height: 45%;
+      }
+    }
+
+    @media screen and (max-height: 600px) and (min-width: 601px){
+      div.custom-text {
+        font-size: 18px;
+      }
+      .custom-text h1 {
+        font-size: 40px;
+      }
+      .custom-image {
+        height: 65%;
+      }
+    }
+
+
+    .custom-image {
+      background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("https://i.ibb.co/HPf9CWt/temperature.jpg");
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      position: relative;
+    }
+
+    .custom-text {
+      text-align: center;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+    }
+
+
+    .topnav {
+      overflow: hidden;
+      background-color: #333;
+    }
+
+    .topnav a {
+      float: left;
+      display: block;
+      color: #f2f2f2;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 17px;
+    }
+
+    .active {
+      background-color: #3C5FE0;
+      color: white;
+    }
+
+    .topnav .icon {
+      display: none;
+    }
+
+
+    .topnav a:hover {
+      background-color: #555;
+      color: white;
+    }
+      .topnav.responsive a {
+        float: none;
+        display: block;
+        text-align: left;
+      }
+      .topnav.responsive {float: none;}
+      .topnav.responsive {position: relative;}
+      .topnav.responsive {
+        display: block;
+        width: 100%;
+        text-align: left;
+      }
+    }
+  </style>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+    google.charts.load('current', {'packages':['table','corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('number', 'Température');
+        data.addColumn('string', 'Date');
+					data.addRows(5);
+				data.setCell(0, 0, '38.5');
+				data.setCell(0, 1, '2021-02-17 10:10:44');
+				data.setCell(1, 0, '39.5');
+				data.setCell(1, 1, '2021-02-17 10:10:44');
+				data.setCell(2, 0, '38.9');
+				data.setCell(2, 1, '2021-02-17 10:10:44');
+				data.setCell(3, 0, '38.8');
+				data.setCell(3, 1, '2021-02-17 10:10:44');
+				data.setCell(4, 0, '39.3');
+				data.setCell(4, 1, '2021-02-17 10:10:44');
+      var table = new google.visualization.Table(document.getElementById('chart_div'));
+      table.draw(data, {showRowNumber: true, width: '60%', height: '60%'});
+
+      google.visualization.events.addListener(table, 'select', function() {
+        var row = table.getSelection()[0].row;
+        alert('You selected ' + data.getValue(row, 0));
+      });
+    }
+
+    </script>
+</head>
+<body>
+
+
+  <div class="topnav" id="myTopnav">
+    <a href="#accueil" <button onclick="charger_accueil()">Accueil</button></a>
+    <a href="#localisation" <button onclick="charger_localisation()">Localisation</button></a>
+    <a href="#temperature" class="active" <button onclick="charger_temperature()">Température</button></a>
+    <a href="#github" <button onclick="charger_github()">Github</button></a>
+  </div>
+
+  <div class="custom-image">
+    <div class="custom-text">
+      <h1>Température</h1>
+      <p>Consultez la température de votre animal</p>
+    </div>
+  </div>
+
+
+
+  <!-- The filterable elements. Note that some have multiple class names (this can be used if they belong to multiple categories) -->
+  <div class="container">  <!-- Control buttons -->
+    <br>
+    <br>
+    <br>
+    <h3>Température de l'animal</h3>
+    <br>
+    <div id="myBtnContainer">
+      <button class="btn active" onclick="filterSelection('Animals')"> Mes animaux</button>
+    </div>
+    <br>
+<a href="/Temp-0" <button>tokyo </button></a><a href="/Temp-1" <button>chanel </button></a>
+
+  </div>
+
+  <div class="container">
+  <br>
+  <br>
+  <br>
+    <div class="row">
+      <div class="column">
+      <div id="chart_div" style="width: device-width; height: 500px;"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+
+    window.onresize = ajuster;
+
+    function ajuster() {
+        drawChart()
+    }
+
+    function charger_accueil() {
+          location.replace("./Accueil")
+    }
+    function charger_localisation() {
+          location.replace("./Loc")
+    }
+    function charger_temperature() {
+          location.replace("./Temp")
+    }
+    function charger_github() {
+      var win = window.open("https://github.com/Polytech-Sorbonne/EI-SE5_2020-2021_ePet", '_blank');
+      win.focus();
+    }
+
+  </script>
+
+</body>
+</html>
