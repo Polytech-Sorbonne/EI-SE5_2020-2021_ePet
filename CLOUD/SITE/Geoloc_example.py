@@ -45,7 +45,7 @@ def get_location(trame1, trame2):
         print("version formatée:", signalStrength_formatage(signalStrength[i]))
         print("--")
     # formation du message json
-    file = open("mac_adresses.json","w")
+    
     json_file = '''{ \n"considerIp": "false",\n'''
     json_file +=''' "wifiAccessPoints": [\n'''
     json_file +='''     {\n'''
@@ -61,9 +61,6 @@ def get_location(trame1, trame2):
     json_file +=''' ]\n'''
     json_file +='''}\n'''
 
-    file.write(json_file)
-    file.close()
-
     #fichier pour lire la clé:
     kapi = open("key2.txt", "r")
     ligne = kapi.read()
@@ -74,7 +71,7 @@ def get_location(trame1, trame2):
     print("classe = ", type(ligne).__name__)
 
 
-    #key a remplacer par celle de Melissa dans le trello
+    #key a remplacer 
     url = 'https://www.googleapis.com/geolocation/v1/geolocate?key='+ str(ligne)
     donnees = json.loads(json_file)
     print("donnees = ",donnees)
