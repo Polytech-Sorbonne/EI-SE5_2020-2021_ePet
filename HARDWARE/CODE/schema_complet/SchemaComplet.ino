@@ -359,7 +359,7 @@ int moyTemp(int temp_tab[7], int nb){ // NB = 3 ou 4
 
 // ############################ Fonctions pour les capteurs ############################
 
-// Détecte les WIFI au alentour
+// Détecte les WIFI aux alentours
 void detection_wifi(){
   
   Serial.println("scan start");
@@ -594,7 +594,7 @@ void send_message(char* msg){
 }
 
 
-//Formation des messages          A TESTER
+//Formation des messages          
 void format_message(){
   
   char *mess1 = (char*)malloc(30 * sizeof(char));
@@ -615,17 +615,17 @@ void format_message(){
   Serial.print("-- on est dans le cas n° ");Serial.println(cas);
   switch(cas){
     
-    case 0: // Température normal & aucun mouvement
+    case 0: // Température normale & aucun mouvement
       break;
       
-    case 1: // Température anormal & aucun mouvement
+    case 1: // Température anormale & aucun mouvement
       convByteToCharTemp(temp1, temp1_trad);
       strcat(mess1, "00000000000000");
       strcat(mess1, temp1_trad);
       strcat(mess1, "06\r\n");      
       break;
       
-    case 2: // Température normal & mouvement présent & pas chgmt localisation
+    case 2: // Température normale & mouvement présent & pas chgmt localisation
 
       convByteToCharAcc(mouvX, x_trad);
       convByteToCharAcc(mouvY, y_trad);
@@ -640,7 +640,7 @@ void format_message(){
       strcat(mess2, "02\r\n");    
       break;
       
-    case 3: // Température anormal & mouvement présent & pas chgmt localisation
+    case 3: // Température anormale & mouvement présent & pas chgmt localisation
 
       convByteToCharAcc(mouvX, x_trad);
       convByteToCharAcc(mouvY, y_trad);
@@ -661,7 +661,7 @@ void format_message(){
       strcat(mess2, "05\r\n");
       break;
       
-    case 4: // Température normal & mouvement présent & chgmt localisation
+    case 4: // Température normale & mouvement présent & chgmt localisation
       
       convByteToCharBssid(bssid1, rssi1, bssid1_trad);
       convByteToCharBssid(bssid2, rssi2, bssid2_trad); 
@@ -678,7 +678,7 @@ void format_message(){
       }
       break;
        
-    case 5: // Température anormal & mouvement présent & chgmt localisation
+    case 5: // Température anormale & mouvement présent & chgmt localisation
 
       convByteToCharBssid(bssid1, rssi1, bssid1_trad);
       convByteToCharBssid(bssid2, rssi2, bssid2_trad); 
