@@ -14,8 +14,6 @@ Le projet consiste en un collier connecté pour animal de compagnie, permettant 
 
 Pour la partie serveur, toutes les informations se trouvent dans la partie CLOUD. Il y a également un tutoriel pour configurer une box et une raspberry pi afin d'héberger un site web.
 
-####[Lien CLOUD](https://github.com/Polytech-Sorbonne/EI-SE5_2020-2021_ePet/tree/main/CLOUD)
-
 ## Electronique :
 
 Pour la partie électronique, le matériel utilisé est renseigné dans le fichier ####Liste_du_matériels_finale . On obtient le système ci-dessous:
@@ -55,4 +53,4 @@ Dans cette page, on peut choisir l'animal pour lequel on veut consulter sa posit
 
 Pour la température, on peut consulter la température de son animal grâce à un tableau. La température s'affiche seulement dans le cas où la température est anormale.
 
-![Site Température](VISUELS/Température_site.png)
+![Site Température](VISUELS/Temperature_site.png)
