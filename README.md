@@ -54,3 +54,7 @@ Dans cette page, on peut choisir l'animal pour lequel on veut consulter sa posit
 Pour la température, on peut consulter la température de son animal grâce à un tableau. La température s'affiche seulement dans le cas où la température est anormale.
 
 ![Site Température](VISUELS/Temperature_site.png)
+
+### Vidéo:
+
+Consultez notre vidéo de présentation au lien suivant: https://youtu.be/6R1KARqUVJA 
