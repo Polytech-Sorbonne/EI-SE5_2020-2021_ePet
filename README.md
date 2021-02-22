@@ -16,7 +16,7 @@ Pour la partie serveur, toutes les informations se trouvent dans la partie CLOUD
 
 ## Electronique :
 
-Pour la partie électronique, le matériel utilisé est renseigné dans le fichier ####Liste_du_matériels_finale . On obtient le système ci-dessous:
+Pour la partie électronique, le matériel utilisé est renseigné dans le fichier Liste_du_matériels_finale.pdf . On obtient le système ci-dessous:
 
 ![Electronique](VISUELS/PCB.jpg)    
 
