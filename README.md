@@ -7,6 +7,6 @@ Les données sont envoyées via Sigfox à notre serveur local hébergé sur une 
 Les déplacements sont détéctés via un accéléromètre et les températures via un thermomètre.
 Le maître peut visualiser ces données via le site mis en place hébergé par le serveur.
 
-![Site accueil](./VISUELS/page_accueil_site.png)
+![Site accueil](VISUELS/Page_accueil_site.png)
 
 
