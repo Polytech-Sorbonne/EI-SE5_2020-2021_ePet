@@ -697,7 +697,8 @@ def twos_complement(hexstr,bits):
 
 if __name__ == '__main__':
 	server_class = http.server.HTTPServer
-	httpd = server_class(("localhost", 8888), MyHandler)
+	httpd = server_class(("localhost", 8888), MyHandler) #localhost
+#	httpd = server_class(("", numero_port), MyHandler) # Serveur sur Raspberry Pi: numero_port correspond au numéro de port ouvert sur la box
 	try:
 		httpd.serve_forever()
 	except KeyboardInterrupt:
