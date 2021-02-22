@@ -1,9 +1,9 @@
-Serveur correspondant au site de visualisation des données
+# Serveur correspondant au site de visualisation des données
 
-# base de données
+## Base de données
 Le serveur est rattaché à une base de données epet.db, mise à jour à chaque réception de données.
 
-# récupération des données
+## Récupération des données
 Les données sont récupérées depuis le backend de sigfox via un POST sur /device.
 Elles sont envoyées sous format JSON et contiennent :
 - l'id du device Sigfox émetteur,
@@ -14,7 +14,7 @@ Pour pouvoir recevoir les callbacks depuis le backend de Sigfox, il faut lancer 
 
 Les fichiers contenus dans example_requests permettent de simuler un callback sigfox pour plusieurs trames.
 	
-# Localisation et requêtes Google API
+## Localisation et requêtes Google API
 La localisation est déterminée par la technique de sniffing de wifi, avec 2 adresses mac environnant le device et leur rssi, on peut interroger des bases telles que celle de Google, et recevoir une localisation. Pour se faire, il faut enregistrer un compte sur Google Api, créer un profil de paiement, et récupérer une clé API.
 Notre clé API Google a été stockée dans le fichier key2.txt .
 
