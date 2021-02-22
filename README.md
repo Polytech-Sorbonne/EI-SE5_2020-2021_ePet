@@ -56,5 +56,5 @@ Pour la température, on peut consulter la température de son animal grâce à 
 ![Site Température](VISUELS/Temperature_site.png)
 
 ### Vidéo:
-
+![Vidéo présentation](VISUELS/video_couverture.png)
 Consultez notre vidéo de présentation au lien suivant: https://youtu.be/6R1KARqUVJA 
